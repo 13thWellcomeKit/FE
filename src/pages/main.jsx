@@ -1,5 +1,161 @@
+import Header from "../components/Header"
+import CheckBoard from "../components/Board"
+import styled from "styled-components"
+import { IoIosArrowRoundForward } from "react-icons/io";
+import { ReactComponent as mainlogo } from '../svg/mainlogo.svg'
+import { useNavigate } from "react-router-dom";
+
+
+const PageContainer = styled.div`
+    width : 100%;
+    height : 59.38rem;
+    padding : 2.25rem 3.44rem;
+    display: flex;
+    flex-direction: row;
+    background: var(--Bold-Black, #1C1B1A);
+    box-sizing: border-box;
+    gap: 10.69rem;
+    overflow: hidden;
+`
+
+const TextContainer = styled.div`
+    display: flex;
+    width: 35.8125rem;
+    height : 28.88rem;
+    flex-direction: column;
+    margin-top : 6.44rem;
+`
+
+const TitleText = styled.h1`
+font-family: Montserrat;
+font-size: 6rem;
+font-style: normal;
+font-weight: 700;
+line-height: 140%; /* 8.4rem */
+letter-spacing: -0.15rem;
+color: #FFFF;
+margin: 0;
+margin-bottom: 1.5rem;
+
+`
+const MiddleContainer = styled.div`
+    display: flex;
+    width: 35.875rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3rem; /* 간격 조정 */
+    height: 28.88rem; /* 높이 자동 조정 */
+`;
+
+const MiddleText = styled.h1`
+    width : 33.8rem;
+    font-family: Pretendard;
+    font-size: 2.25rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 140%; /* 줄 간격 유지 */
+    letter-spacing: -0.05625rem;
+    color: #FFFF;
+    margin: 0;
+`;
+
+const IntroButton = styled.div`
+    width: 14.2625rem;
+    height: 3.5625rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap : 0.75rem;
+    border: 1.5px solid #FFFF;
+`
+
+const ButtonText = styled.h1`
+    font-family: Pretendard;
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 140%; /* 2.1rem */
+    letter-spacing: -0.0375rem;
+    margin-left: 0.5rem;
+    color : #FFFF;
+`
+
+const Arrow = styled(IoIosArrowRoundForward)`
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-left: 0.72rem;
+    color : #FFFF;
+`
+
+const Circle = styled.div`
+    display : flex;
+    width: 41.875rem;
+    height: 41.875rem;
+    transform: rotate(-75deg);
+    border-radius: 41.875rem;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.7;
+    background: linear-gradient( rgba(254, 88, 38, 0.75) 0%, rgba(0, 0, 0, 0.00) 47.5%, #200801 100%);
+    overflow: hidden;
+`
+const MainLogo = styled(mainlogo)`
+    transform: rotate(75deg);
+`
+
+const TextOverlay = styled.h1`
+    position: absolute;
+    transform: rotate(75deg);
+    top: 50%;
+    left: 50%;
+    font-family: Montserrat;
+    font-size: 3rem;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    z-index: 2; /* SVG 위에 배치 */
+`;
+
 export default function Main(){
+
+    const navigate = useNavigate();
+
+    // const GotoIntro = () => {
+    //     navigate("/Introduce")
+    // }
+
     return(
-        <p>main</p>
+        <>
+            <Header></Header>
+            <PageContainer>
+                <TextContainer>
+                    <TitleText>WELCOME</TitleText>
+                    <MiddleContainer>
+                        <MiddleText>
+                        한국외대 글로벌캠퍼스<br/>
+                        멋쟁이사자처럼입니다.
+                        </MiddleText>
+                        <MiddleText>
+                            13기 아기사자 여러분,환영합니다!
+                        </MiddleText>
+                        <IntroButton>
+                            <ButtonText>
+                                멋사 알아보기
+                            </ButtonText>
+                            <Arrow />
+                        </IntroButton>
+                    </MiddleContainer>
+                </TextContainer>
+                <Circle>
+                    <MainLogo/>
+                    <TextOverlay>
+                        GROWL-TO<br/>
+                        ->WORLD
+                    </TextOverlay>
+                </Circle>
+            </PageContainer>
+        </>
     )
+        
+    
 }
