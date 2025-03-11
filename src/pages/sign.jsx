@@ -1,7 +1,7 @@
 import Header from "../components/Header"
 import styled from "styled-components"
 import { ReactComponent as mainlogo } from '../svg/mainlogo.svg'
-import { useNavigate } from "react-router-dom"
+
 const PageContainer = styled.div`
     width : 100%;
     height : 59.38rem;
@@ -13,16 +13,23 @@ const PageContainer = styled.div`
     gap: 10.69rem;
     overflow: hidden;
 `
-const LoginContainer = styled.div`
+const SignContainer = styled.div`
     display: flex;
     width: 29rem;
-    height: 40.56rem;
     padding: 3.75rem 2.25rem;
     flex-direction: column;
     border-radius: 1.25rem;
     box-sizing: border-box;
     background: rgba(255, 255, 255, 0.19);
     backdrop-filter: blur(10px);
+
+    overflow-y: auto; /* 세로 스크롤 활성화 */
+  scrollbar-width: none; /* 파이어폭스에서 스크롤바 숨김 */
+  -ms-overflow-style: none; /* IE, Edge에서 스크롤바 숨김 */
+
+  &::-webkit-scrollbar {
+    display: none; /* 크롬, 사파리에서 스크롤바 숨김 */
+  }
 `
 const TitleText = styled.h1`
     font-family: Pretendard;
@@ -32,22 +39,10 @@ const TitleText = styled.h1`
     line-height: 140%; /* 2.8rem */
     letter-spacing: -0.05rem;
     margin: 0;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
     color : #FFFF;
 `
 
-const MiddleText = styled.h1`
-    font-family: Pretendard;
-    font-size: 1.25rem;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 140%; /* 1.75rem */
-    letter-spacing: -0.03125rem;
-    color : #FFFF;
-    margin : 0;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-`
 
 const LoginText = styled.h1`
     font-family: Pretendard;
@@ -90,7 +85,7 @@ const ButtonContainer = styled.div`
     align-items: center;
 `
 
-const LoginButton = styled.div`
+const SignButton = styled.div`
     display: flex;
     width: 12.375rem;
     height: 3.25rem;
@@ -180,15 +175,7 @@ const TextOverlay = styled.h1`
     z-index: 2; /* SVG 위에 배치 */
 `;
 
-export default function Login(){
-
-    const navigate = useNavigate();
-
-    const GotoSignup = () => {
-        navigate("/signup")
-    }
-
-
+export default function SignUp(){
     return(
         <>
             <Header></Header>
@@ -200,12 +187,16 @@ export default function Login(){
                         ->WORLD
                     </TextOverlay>
                 </Circle>
-                <LoginContainer>
-                    <TitleText>로그인</TitleText>
-                    <MiddleText>
-                        한국외국어대학교 글로벌캠퍼스 <br/>
-                        멋쟁이 사자처럼 대학 홈페이지입니다.
-                    </MiddleText>
+                <SignContainer>
+                    <TitleText>회원가입</TitleText>
+                    <LoginText>
+                        이름
+                    </LoginText>
+                    <LoginInput placeholder="이름을을 입력해주세요."></LoginInput>
+                    <LoginText>
+                        학번 
+                    </LoginText>
+                    <LoginInput placeholder="학번을 입력해주세요."></LoginInput>
                     <LoginText>
                         ID  
                     </LoginText>
@@ -214,14 +205,14 @@ export default function Login(){
                         PW 
                     </LoginText>
                     <LoginInput placeholder="비밀번호를 입력해주세요."></LoginInput>
+                    <LoginText>
+                        PW 중복확인
+                    </LoginText>
+                    <LoginInput placeholder="다시 한 번 비밀번호를 입력해주세요."></LoginInput>
                     <ButtonContainer>
-                        <LoginButton>LOGIN</LoginButton>
-                        <InfoContainer>
-                            <InfoText>아이디가 없으신가요?</InfoText>
-                            <SignText onClick={GotoSignup}>회원가입</SignText>
-                        </InfoContainer>
+                        <SignButton>회원가입</SignButton>
                     </ButtonContainer>
-                </LoginContainer>
+                </SignContainer>
             </PageContainer>
         </>
     )

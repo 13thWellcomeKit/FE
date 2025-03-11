@@ -1,10 +1,13 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Main from './pages/main';
-import Login from './pages/login';
+import MyPage from './pages/mypage';
 import Check from './pages/check';
 import Bingo from './pages/bingo';
 import Setting from './pages/setting';
+import Introduce from './pages/introduce';
+import Login from './pages/login';
+import SignUp from './pages/sign';
 
 const RouterComponent = () => {
     return(
@@ -12,9 +15,12 @@ const RouterComponent = () => {
             <Routes>
                 <Route path="/" element={<Setting />} />
                 <Route path="/main" element={<Main />} />
-                <Route path="/login" element={<Login />} />
+                <Route path="/mypage" element={<MyPage />} />
                 <Route path="/check" element={<Check />} />
                 <Route path="/bingo" element={<Bingo />} />
+                <Route path="/introduce" element={<Introduce />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
             </Routes>
         </BrowserRouter>
     )
