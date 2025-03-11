@@ -1,3 +1,14 @@
+# 작업 방식
+1. merge한 사람이 merge 했다고 하면 dev에서 pull 받아서 최신화 하기 (git pull upstream dev)
+2. dev브랜치에서 feat/관련 내용 브랜치 생성 (git switch dev -> git switch -c feat/관련 내용)
+3. 기능 개발 완료 후 [feat/관련 내용] 커밋 메시지 내용 형식으로 commit 및 push (git commit -m "[feat/관련 내용] 커밋 내용" -> git push origin feat/관련 내용)
+4. github 사이트 와서 pull & request 생성하기 (dev <- feat/관련 내용)
+5. 피드백 완료 후 본인이 merge 하기
+6. feat/관련 내용 브랜치 -> dev 브랜치로 이동 (git switch dev)
+7. dev브랜치에서 main으로 푸쉬 (git add . 후에 git push origin dev)
+8. main<-dev로 PR 작성
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
