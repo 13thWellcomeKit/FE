@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import { useState } from "react"
 
 const BoardContainer = styled.div`
     width : 42rem;
@@ -100,6 +101,21 @@ const FixButton = styled.div`
 /// 어느정도 만들고 목데이터 연결 
 export default function CheckBoard(){
 
+    const [Atd , setAtd] = useState(0);
+
+////부모로 부터 받아온 목데이터터
+    const mockdata = {
+        id : 1,
+        user_name : "김민석",
+        student_num : 202100597,
+        team_id : "1팀",
+        user_type : "FE",
+        attendance : Atd
+    }
+
+    const HandleAttendance = () => {
+        setAtd(prev => (prev === 1 ? 0 : 1));
+    }
 
     return(
         <BoardContainer>
@@ -110,11 +126,11 @@ export default function CheckBoard(){
                 <TitleBox>출석수정</TitleBox>
             </BoardTitle>
             <BoardRow>
-                <RowBox>1팀</RowBox>
-                <RowBox>김민석</RowBox>
-                <RowBox>출석</RowBox>
+                <RowBox>{mockdata.team_id}</RowBox>
+                <RowBox>{mockdata.user_name}</RowBox>
+                <RowBox>{mockdata.attendance === 1 ? "출석" : "결석"}</RowBox>
                 <FixBox>
-                    <FixButton>출석수정</FixButton>
+                    <FixButton onClick={HandleAttendance}>출석수정</FixButton>
                 </FixBox>
             </BoardRow>
         </BoardContainer>

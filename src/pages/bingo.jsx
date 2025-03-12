@@ -1,5 +1,7 @@
+import Header from "../components/Header"
+
 export default function Bingo(){
     return(
-        <p>bingo</p>
+        <Header></Header>
     )
 }
