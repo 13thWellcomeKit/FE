@@ -65,13 +65,13 @@ export default function Header(){
             <Logo />
             <MenuContainer>
                 <HeaderText active={location.pathname === "/main"} onClick={() => HandleNavigate("/main")}>HOME</HeaderText>
-                <HeaderText active={location.pathname === "/"} onClick={() =>HandleNavigate("/")}>INTRODUCE</HeaderText>
+                <HeaderText active={location.pathname === "/introduce"} onClick={() =>HandleNavigate("/introduce")}>INTRODUCE</HeaderText>
                 <HeaderText active={location.pathname === "/check"} onClick={() => HandleNavigate("/check")}>ATTENDANCE</HeaderText>
                 <HeaderText active={location.pathname === "/bingo"} onClick={() => HandleNavigate("/bingo")}>BINGO</HeaderText>
             </MenuContainer>
             <LoginContainer>
                 <HeaderText active={location.pathname === "/login"} onClick={() => HandleNavigate("/login")}>LOGIN</HeaderText>
-                <HeaderText active={location.pathname === "/"} onClick={() => HandleNavigate("/")}>MYPAGE</HeaderText>
+                <HeaderText active={location.pathname === "/mypage"} onClick={() => HandleNavigate("/mypage")}>MYPAGE</HeaderText>
             </LoginContainer>
         </HeaderContainer>
     )

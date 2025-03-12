@@ -67,6 +67,7 @@ const IntroButton = styled.div`
     align-items: center;
     gap : 0.75rem;
     border: 1.5px solid #FFFF;
+    cursor: pointer;
 `
 
 const ButtonText = styled.h1`
@@ -86,43 +87,47 @@ const Arrow = styled(IoIosArrowRoundForward)`
     margin-left: 0.72rem;
     color : #FFFF;
 `
-
 const Circle = styled.div`
-    display : flex;
-    width: 41.875rem;
-    height: 41.875rem;
-    transform: rotate(-75deg);
-    border-radius: 41.875rem;
+    display: flex;
     justify-content: center;
     align-items: center;
+    width: 41.875rem;
+    height: 41.875rem;
+    border-radius: 50%;
+    transform: rotate(-75deg);
     opacity: 0.7;
-    background: linear-gradient( rgba(254, 88, 38, 0.75) 0%, rgba(0, 0, 0, 0.00) 47.5%, #200801 100%);
+    background: linear-gradient(rgba(254, 88, 38, 0.75) 0%, rgba(0, 0, 0, 0.00) 47.5%, #200801 100%);
     overflow: hidden;
-`
+    position: relative; 
+`;
+
 const MainLogo = styled(mainlogo)`
+    position: absolute; 
+    width: 80%; 
+    height: auto;
     transform: rotate(75deg);
-`
+
+`;
 
 const TextOverlay = styled.h1`
-    position: absolute;
-    transform: rotate(75deg);
-    top: 50%;
-    left: 50%;
     font-family: Montserrat;
     font-size: 3rem;
     font-weight: 700;
     color: white;
     text-align: center;
-    z-index: 2; /* SVG 위에 배치 */
+    position: relative; 
+    z-index: 2; 
+    transform: rotate(75deg);
 `;
+
 
 export default function Main(){
 
     const navigate = useNavigate();
 
-    // const GotoIntro = () => {
-    //     navigate("/Introduce")
-    // }
+    const GotoIntro = () => {
+        navigate("/Introduce")
+    }
 
     return(
         <>
@@ -138,7 +143,7 @@ export default function Main(){
                         <MiddleText>
                             13기 아기사자 여러분,환영합니다!
                         </MiddleText>
-                        <IntroButton>
+                        <IntroButton onClick={GotoIntro}>
                             <ButtonText>
                                 멋사 알아보기
                             </ButtonText>

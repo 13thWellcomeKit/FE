@@ -1,6 +1,8 @@
 import Header from "../components/Header"
 import styled from "styled-components"
 import { ReactComponent as mainlogo } from '../svg/mainlogo.svg'
+import { useState } from "react"
+import { useEffect } from "react"
 
 const PageContainer = styled.div`
     width : 100%;
@@ -104,6 +106,7 @@ const SignButton = styled.div`
     color : #FF7710;
     margin-top: 2rem;
     margin-bottom: 2rem;
+    cursor: pointer;
 
     &:hover {
     background-color: #FF7710;
@@ -143,39 +146,78 @@ const SignText = styled.h1`
     cursor: pointer;
 `
 
-
 const Circle = styled.div`
-    display : flex;
-    width: 41.875rem;
-    height: 41.875rem;
-    transform: rotate(-75deg);
-    border-radius: 41.875rem;
+    display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 41.875rem;
-    opacity: 0.7;
-    background: linear-gradient(180deg, rgba(28, 7, 1, 0.87) 0%, rgba(0, 0, 0, 0.00) 47.5%, rgba(254, 88, 38, 0.75) 100%);
-    overflow: hidden;
-`
-const MainLogo = styled(mainlogo)`
+    width: 41.875rem;
+    height: 41.875rem;
+    border-radius: 50%;
     transform: rotate(75deg);
-`
+    opacity: 0.7;
+    background: linear-gradient(rgba(254, 88, 38, 0.75) 0%, rgba(0, 0, 0, 0.00) 47.5%, #200801 100%);
+    overflow: hidden;
+    position: relative; 
+`;
+
+const MainLogo = styled(mainlogo)`
+    position: absolute; 
+    width: 80%; 
+    height: auto;
+    transform: rotate(-75deg);
+
+`;
 
 const TextOverlay = styled.h1`
-//// 절대 위치 정말 싫어 방법이 없을까? ////
-    position: absolute;
-    transform: rotate(75deg);
-    top: 50%;
-    left: 50%;
     font-family: Montserrat;
     font-size: 3rem;
     font-weight: 700;
     color: white;
     text-align: center;
-    z-index: 2; /* SVG 위에 배치 */
+    position: relative; 
+    z-index: 2; 
+    transform: rotate(-75deg);
 `;
 
+const CautionText = styled.h1`
+    font-family: Pretendard;
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 140%; /* 1.225rem */
+    letter-spacing: -0.02188rem;
+    color : #FF7710;
+    margin-left: 2rem;
+`
+
 export default function SignUp(){
+
+    const [username, setUsername] = useState("");
+    const [stunum, setStunum] = useState("");
+    const [password, setPassword] = useState("");
+    const [checkpw , setCheckpw] = useState("");
+    const [error , setError] = useState("");
+
+
+    useEffect(() => {
+        if (checkpw && password !== checkpw) {
+            setError("비밀번호가 틀립니다.");
+        } else {
+            setError("");
+        }
+    }, [password, checkpw]);
+
+    const PostData = {
+        user_name : username,
+        student_num : stunum,
+        password : password
+    }
+
+    const CheckLog = () => {
+        console.log(PostData);
+        
+    }
+
     return(
         <>
             <Header></Header>
@@ -192,25 +234,34 @@ export default function SignUp(){
                     <LoginText>
                         이름
                     </LoginText>
-                    <LoginInput placeholder="이름을을 입력해주세요."></LoginInput>
+                    <LoginInput
+                    placeholder="이름을 입력해주세요."
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)} />
                     <LoginText>
                         학번 
                     </LoginText>
-                    <LoginInput placeholder="학번을 입력해주세요."></LoginInput>
-                    <LoginText>
-                        ID  
-                    </LoginText>
-                    <LoginInput placeholder="아이디를 입력해주세요."></LoginInput>
+                    <LoginInput
+                    placeholder="학번을 입력해주세요."
+                    value={stunum}
+                    onChange={(e) => setStunum(e.target.value)} />
                     <LoginText>
                         PW 
                     </LoginText>
-                    <LoginInput placeholder="비밀번호를 입력해주세요."></LoginInput>
+                    <LoginInput
+                    placeholder="비밀번호를 입력해주세요."
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)} />
                     <LoginText>
                         PW 중복확인
                     </LoginText>
-                    <LoginInput placeholder="다시 한 번 비밀번호를 입력해주세요."></LoginInput>
+                    <LoginInput
+                    placeholder="다시 한 번 비밀번호를 입력해주세요."
+                    value={checkpw}
+                    onChange={(e) => setCheckpw(e.target.value)} />
+                    {error && <CautionText>{error}</CautionText>}
                     <ButtonContainer>
-                        <SignButton>회원가입</SignButton>
+                        <SignButton onClick={CheckLog}>회원가입</SignButton>
                     </ButtonContainer>
                 </SignContainer>
             </PageContainer>
