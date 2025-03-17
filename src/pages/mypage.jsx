@@ -1,6 +1,7 @@
 import Header from "../components/Header"
 import styled from "styled-components"
 import { useState } from "react"
+import axios from "axios"
 
 
 const PageContainer = styled.div`
@@ -132,13 +133,28 @@ export default function MyPage(){
         user_type : "FE"
     }
 
+    async function fetchMyData() {
+        try {
+          const response = await axios.get('https://welcomekitbe.lion.it.kr/api/user/info', {
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          console.log(response.data);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      }
+
+    // 추후 url바꾸어서 시도
+
     return(
         <>
             <Header></Header>
             <PageContainer>
                 <MypageContainer>
                     <MypageHeader>
-                        <HeaderText>MY Page</HeaderText>
+                        <HeaderText onClick={fetchMyData}>MY Page</HeaderText>
                         <MypageButton>프로필 이미지 등록</MypageButton>
                         <MypageButton>비밀번호 변경</MypageButton>
                     </MypageHeader>

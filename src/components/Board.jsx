@@ -1,5 +1,7 @@
 import styled from "styled-components"
 import { useState } from "react"
+import media from "styled-media-query"
+
 
 const BoardContainer = styled.div`
     width : 42rem;
@@ -12,6 +14,10 @@ const BoardContainer = styled.div`
         width: 0px;
         height: 0px;
     }
+
+    ${media.lessThan("medium")`
+            display : none;
+      `}
 `
 
 const BoardTitle = styled.div`
@@ -95,6 +101,8 @@ const FixButton = styled.div`
     letter-spacing: -0.025rem;
 
 `
+
+
 
 
 /// api연동으로 불러오기 
