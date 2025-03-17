@@ -3,6 +3,8 @@ import styled from "styled-components"
 import { ReactComponent as mainlogo } from '../svg/mainlogo.svg'
 import { useNavigate } from "react-router-dom"
 import { useState , useEffect } from "react"
+import axios from "axios"
+
 
 const PageContainer = styled.div`
     width : 100%;
@@ -208,8 +210,6 @@ export default function Login(){
 
     const GotoSignup = () => {
         navigate("/signup")
-        console.log(Mockdata);
-        
     }
 
     useEffect(() => {
@@ -221,10 +221,29 @@ export default function Login(){
     }, [password, pw]);
 
 
-    const Mockdata = {
-        student_num : id,
-        password : password
-    }
+    // const Mockdata = {
+    //     student_num : id,
+    //     password : password
+    // }
+
+
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post("https://welcomekitbe.lion.it.kr/api/auth/sign-in", {
+                "studentNum": id,
+                "password": password,
+            });
+
+            console.log("로그인 성공:", response.data);
+            alert("로그인 성공!");
+            navigate("/main")
+        } catch (error) {
+            console.error("로그인 실패:", error.response?.data || error.message);
+            alert("로그인에 실패했습니다.");
+        }
+    };
+
+
 
     /// 콘솔 확인 완료
 
@@ -261,7 +280,7 @@ export default function Login(){
                     onChange={(e) => setPassword(e.target.value)}/>
                     {error && <CautionText>{error}</CautionText>}
                     <ButtonContainer>
-                        <LoginButton>LOGIN</LoginButton>
+                        <LoginButton onClick = {handleLogin}>LOGIN</LoginButton>
                         <InfoContainer>
                             <InfoText>아이디가 없으신가요?</InfoText>
                             <SignText onClick={GotoSignup}>회원가입</SignText>

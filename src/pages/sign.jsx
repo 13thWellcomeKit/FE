@@ -3,6 +3,8 @@ import styled from "styled-components"
 import { ReactComponent as mainlogo } from '../svg/mainlogo.svg'
 import { useState } from "react"
 import { useEffect } from "react"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
 const PageContainer = styled.div`
     width : 100%;
@@ -198,6 +200,8 @@ export default function SignUp(){
     const [checkpw , setCheckpw] = useState("");
     const [error , setError] = useState("");
 
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         if (checkpw && password !== checkpw) {
@@ -207,16 +211,34 @@ export default function SignUp(){
         }
     }, [password, checkpw]);
 
-    const PostData = {
-        user_name : username,
-        student_num : stunum,
-        password : password
+
+    const CheckMock = {
+        name: username,
+        studentNum: stunum,
+        password: password,
+        userType: "BABY_LION"
     }
 
-    const CheckLog = () => {
-        console.log(PostData);
-        
-    }
+
+    const handleSubmit = async () => {
+        try {
+            const response = await axios.post("https://welcomekitbe.lion.it.kr/api/user/join", {
+                "name": username,
+                "studentNum": stunum,
+                "password": password,
+                "userType": "BABY_LION"
+            });
+
+            console.log("회원가입 성공:", response.data);
+            alert("회원가입이 완료되었습니다!");
+        } catch (error) {
+            console.error("회원가입 실패:", error.response?.data || error.message);
+            alert("회원가입에 실패했습니다.");
+            console.log(CheckMock);
+        }
+
+        navigate("/login")
+    };
 
     return(
         <>
@@ -261,7 +283,7 @@ export default function SignUp(){
                     onChange={(e) => setCheckpw(e.target.value)} />
                     {error && <CautionText>{error}</CautionText>}
                     <ButtonContainer>
-                        <SignButton onClick={CheckLog}>회원가입</SignButton>
+                        <SignButton onClick={handleSubmit}>회원가입</SignButton>
                     </ButtonContainer>
                 </SignContainer>
             </PageContainer>

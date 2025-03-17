@@ -4,6 +4,8 @@ import styled from "styled-components"
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { ReactComponent as mainlogo } from '../svg/mainlogo.svg'
 import { useNavigate } from "react-router-dom";
+import media from "styled-media-query";
+
 
 
 const PageContainer = styled.div`
@@ -16,6 +18,11 @@ const PageContainer = styled.div`
     box-sizing: border-box;
     gap: 10.69rem;
     overflow: hidden;
+
+
+    ${media.lessThan("medium")`
+        justify-content: center;
+  `}
 `
 
 const TextContainer = styled.div`
@@ -24,18 +31,33 @@ const TextContainer = styled.div`
     height : 28.88rem;
     flex-direction: column;
     margin-top : 6.44rem;
+
+    ${media.lessThan("medium")`
+        width: 16.75rem;
+        height : 13.12rem;
+        margin-top : 25.13rem;
+  `}
 `
 
 const TitleText = styled.h1`
-font-family: Montserrat;
-font-size: 6rem;
-font-style: normal;
-font-weight: 700;
-line-height: 140%; /* 8.4rem */
-letter-spacing: -0.15rem;
-color: #FFFF;
-margin: 0;
-margin-bottom: 1.5rem;
+    font-family: Montserrat;
+    font-size: 6rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 140%; /* 8.4rem */
+    letter-spacing: -0.15rem;
+    color: #FFFF;
+    margin: 0;
+    margin-bottom: 1.5rem;
+    ${media.lessThan("medium")`
+            text-align: center;
+            font-family: Montserrat;
+            font-size: 1.5rem;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 140%; /* 2.1rem */
+            letter-spacing: -0.0375rem;
+    `}
 
 `
 const MiddleContainer = styled.div`
@@ -45,6 +67,12 @@ const MiddleContainer = styled.div`
     align-items: flex-start;
     gap: 3rem; /* 간격 조정 */
     height: 28.88rem; /* 높이 자동 조정 */
+
+    ${media.lessThan("medium")`
+        width: 16.75rem;
+        height : 13.12rem;
+        align-items:center;
+  `}
 `;
 
 const MiddleText = styled.h1`
@@ -57,6 +85,17 @@ const MiddleText = styled.h1`
     letter-spacing: -0.05625rem;
     color: #FFFF;
     margin: 0;
+
+    ${media.lessThan("medium")`
+    width: 16.75rem;
+    font-family: Pretendard;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 140%; /* 1.4rem */
+    letter-spacing: -0.025rem;
+    text-align: center;
+    `}
 `;
 
 const IntroButton = styled.div`
@@ -68,6 +107,11 @@ const IntroButton = styled.div`
     gap : 0.75rem;
     border: 1.5px solid #FFFF;
     cursor: pointer;
+
+    ${media.lessThan("medium")`
+        width: 8.75rem;
+        height: 3rem;
+    `}
 `
 
 const ButtonText = styled.h1`
@@ -79,6 +123,17 @@ const ButtonText = styled.h1`
     letter-spacing: -0.0375rem;
     margin-left: 0.5rem;
     color : #FFFF;
+
+    ${media.lessThan("medium")`
+        text-align: center;
+        font-family: Pretendard;
+        font-size: 0.875rem;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 140%; /* 1.225rem */
+        letter-spacing: -0.02188rem;
+        margin-left: 0rem;
+    `}
 `
 
 const Arrow = styled(IoIosArrowRoundForward)`
@@ -86,6 +141,10 @@ const Arrow = styled(IoIosArrowRoundForward)`
     height: 1.5rem;
     margin-left: 0.72rem;
     color : #FFFF;
+
+    ${media.lessThan("medium")`
+        margin-left: 0rem;
+    `}
 `
 const Circle = styled.div`
     display: flex;
@@ -99,6 +158,16 @@ const Circle = styled.div`
     background: linear-gradient(rgba(254, 88, 38, 0.75) 0%, rgba(0, 0, 0, 0.00) 47.5%, #200801 100%);
     overflow: hidden;
     position: relative; 
+
+    ${media.lessThan("medium")`
+        position: absolute;
+        left: 50%;
+        top : 8rem;
+        transform: translateX(-50%) rotate(-75deg); /* 가로 중앙 정렬 */
+        width: 15.6155rem;
+        height: 15.6155rem;
+        z-index: 1; /* 텍스트보다 뒤에 배치 */
+    `}
 `;
 
 const MainLogo = styled(mainlogo)`
@@ -107,6 +176,10 @@ const MainLogo = styled(mainlogo)`
     height: auto;
     transform: rotate(75deg);
 
+    ${media.lessThan("medium")`
+        width: 11.65338rem;
+        height: 11.65338rem;
+    `}
 `;
 
 const TextOverlay = styled.h1`
@@ -118,6 +191,15 @@ const TextOverlay = styled.h1`
     position: relative; 
     z-index: 2; 
     transform: rotate(75deg);
+
+    ${media.lessThan("medium")`
+        font-family: Montserrat;
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 140%; /* 2.1rem */
+    letter-spacing: -0.0375rem;
+    `}
 `;
 
 

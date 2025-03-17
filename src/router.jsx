@@ -8,6 +8,7 @@ import Setting from './pages/setting';
 import Introduce from './pages/introduce';
 import Login from './pages/login';
 import SignUp from './pages/sign';
+import QRCodeScanner from './pages/qrscanner';
 
 const RouterComponent = () => {
     return(
@@ -21,6 +22,7 @@ const RouterComponent = () => {
                 <Route path="/introduce" element={<Introduce />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<SignUp />} />
+                <Route path="/qrcodescanner" element={<QRCodeScanner />} />
             </Routes>
         </BrowserRouter>
     )

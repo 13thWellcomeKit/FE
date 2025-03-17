@@ -1,9 +1,10 @@
-import React, { useState } from "react";  // useState import 추가
+import React, { useState, useEffect } from "react";  // useState import 추가
 import Header from "../components/Header";
 import CheckBoard from "../components/Board";
 import styled from "styled-components";
-import { QRCodeSVG } from 'qrcode.react'; 
 import { IoMdClose } from "react-icons/io";
+import axios from "axios";
+import media from "styled-media-query"
 
 
 const PageContainer = styled.div`
@@ -15,6 +16,17 @@ const PageContainer = styled.div`
     background: var(--Bold-Black, #1C1B1A);
     box-sizing: border-box;
     gap: 10.69rem;
+
+    ${media.lessThan("medium")`
+    display: flex;
+    width: 100%;
+    height: 52.75rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    box-sizing: border-box;
+    padding : 3rem 1rem;
+  `}
 `
 
 const TextContainer = styled.div`
@@ -24,6 +36,18 @@ const TextContainer = styled.div`
     flex-direction: column;
     margin-top : 12.25rem;
     gap : 2.5rem;
+
+    ${media.lessThan("medium")`
+        width : 24.375rem;
+        height : 27.88rem;
+        display: flex;
+        padding: 0rem 1rem;
+        align-items: center;
+        gap: 2.5rem;
+        box-sizing: border-box;
+        justify-content: flex-end;
+        margin-top : 0rem;
+  `}
 `
 
 const ButtonContainer = styled.div`
@@ -32,11 +56,19 @@ const ButtonContainer = styled.div`
     gap : 2rem;
     display: flex;
     flex-direction: row;
+
+    ${media.lessThan("medium")`
+        flex-direction: column; 
+        justify-content: center;
+        align-items: center;
+        width : 12.37rem;
+        height: 13.75rem;
+  `}
 `
 
 const TitleText = styled.h1`
     font-family: Montserrat;
-    font-size: 4rem;
+    font-size: 3.7rem;
     font-style: normal;
     font-weight: 700;
     line-height: 140%; /* 5.6rem */
@@ -54,6 +86,11 @@ const MiddleText = styled.h1`
     letter-spacing: -0.0375rem;
     color: #FFFF;
     margin: 0;
+
+
+    ${media.lessThan("medium")`
+        font-size: 1.25rem;
+  `}
 `
 
 const QrButton = styled.div`
@@ -72,6 +109,28 @@ const QrButton = styled.div`
     letter-spacing: -0.02813rem;
     color : #FF7710;
     cursor: pointer;
+`
+
+const CheckButton = styled.div`
+    display: flex;
+    width: 12.375rem;
+    height: 3.25rem;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFFF;
+    border-radius: 3.125rem;
+    font-family: Pretendard;
+    font-size: 1.125rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%; /* 1.575rem */
+    letter-spacing: -0.02813rem;
+    color : #FF7710;
+    cursor: pointer;
+
+    ${media.greaterThan("medium")`
+        display : none;
+  `}
 `
 
 const QRModal = styled.div`
@@ -106,11 +165,39 @@ const Close = styled(IoMdClose)`
     cursor: pointer;
 `
 
-export default function Check() {
-    const [isModalOpen, setIsModalOpen] = useState(false);  
 
-    const openModal = () => setIsModalOpen(true);  
-    const closeModal = () => setIsModalOpen(false);  
+
+export default function Check() {
+    const [isModalOpen, setIsModalOpen] = useState(false); 
+    const [qrImage, setQrImage] = useState(null);
+
+    
+    useEffect(() => {
+        if (isModalOpen) {
+            const fetchQr = async () => {
+                try {
+                    const response = await axios.get('https://welcomekitbe.lion.it.kr/api/attendance/generate-qr', {
+                        responseType: "blob",
+                    });
+                    const imageUrl = URL.createObjectURL(response.data);
+                    setQrImage(imageUrl);
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            };
+
+            fetchQr();
+        }
+    }, [isModalOpen]); // 모달 상태가 변경될 때 실행
+
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setQrImage(null); // 모달 닫을 때 QR 이미지 초기화
+    }; 
+
+
+    //여기서 랜더링하고 출석부 정보 받아서 전달달
 
     return (
         <>
@@ -124,6 +211,7 @@ export default function Check() {
                     </MiddleText>
                     <ButtonContainer>
                         <QrButton onClick={openModal}>QR 체크 진행</QrButton>
+                        <CheckButton>출석하기</CheckButton>
                         <QrButton>출석부 최신화</QrButton>
                     </ButtonContainer>
                 </TextContainer>
@@ -135,7 +223,7 @@ export default function Check() {
                     <ModalOverlay onClick={closeModal} />
                     <QRModal>
                         <Close onClick={closeModal} size = {24}/>
-                        <QRCodeSVG value="https://github.com/orgs/13thWellcomeKit/repositories" size={530} />
+                        {qrImage ? <img src={qrImage} alt="QR Code" style={{ width: "35rem", height: "35rem" }}/> : <p>Loading...</p>}
                     </QRModal>
                 </>
             )}
