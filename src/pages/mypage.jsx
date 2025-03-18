@@ -273,13 +273,7 @@ const MypageBox = styled.div`
 `;
 
 export default function MyPage() {
-  const mockdata = {
-    id: 1,
-    user_name: "김민석",
-    student_num: 202100597,
-    team_id: "1팀",
-    user_type: "FE",
-  };
+
 
   const [userdata, setUserdata] = useState({});
 

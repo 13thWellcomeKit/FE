@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Header from "../components/Header";
-import bingoImage from "../svg/bingo.svg";
+import bingoImage from '../svg/bingo.svg';
 import { BsExclamationTriangle } from "react-icons/bs";
 import axiosInstance from "../axiosInstance";
 import { useAuth } from "../AuthContext";
 import { Cookies } from "react-cookie";
+
+
 
 const PageContainer = styled.div`
   width: 100%;
@@ -163,32 +165,31 @@ const BingoBoard = ({ images, flippedCards, handleCardClick }) => (
 );
 
 export default function Bingo() {
-  const { token } = useAuth();
-  const [flippedCards, setFlippedCards] = useState(Array(9).fill(false));
-  const [missions, setMissions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchBingoData = async () => {
-      const cookies = new Cookies();
-      const storedToken = cookies.get("accessToken"); // ✅ 쿠키에서 다시 가져오기
-      if (!storedToken) {
-        console.warn("⚠️ 액세스 토큰이 없습니다.");
-        return;
-      }
+    const [flippedCards, setFlippedCards] = useState(Array(9).fill(false));
+    const [missions, setMissions] = useState([]);
 
-      try {
-        const response = await axiosInstance.get("/bingo", {
-          headers: {
-            Authorization: `Bearer ${storedToken}`, // ✅ 직접 추가
-          },
-        });
+    useEffect(() => {
+        axiosInstance.get('/bingo')
+            .then(response => {
+                console.log('서버 응답 데이터:', response.data);
+                setMissions(response.data);
+            })
+            .catch(error => {
+                console.error('미션 데이터를 가져오는 데 실패했습니다:', error);
+                if (error.response) {
+                    console.error('서버 응답 상태 코드:', error.response.status);
+                    console.error('서버 응답 데이터:', error.response.data);
+                }
+            });
+    }, []);
+    
 
-        setMissions(response.data.missions || []);
-      } catch (error) {
-        console.error("미션 데이터를 가져오는 데 실패했습니다:", error);
-      }
+    const handleCardClick = (index) => {
+        const newFlippedCards = [...flippedCards];
+        newFlippedCards[index] = !newFlippedCards[index];
+        setFlippedCards(newFlippedCards);
+
     };
 
     fetchBingoData();
