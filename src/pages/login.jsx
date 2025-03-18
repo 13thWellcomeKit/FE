@@ -185,6 +185,7 @@ const SignText = styled.h1`
   color: #ffff;
   cursor: pointer;
 `;
+
 const CircleContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -241,7 +242,7 @@ const TextOverlay = styled.h1`
   font-size: clamp(2rem, 5vw, 6rem);
 
   @media (max-width: ${breakpoints.mobile}) {
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-size: clamp(1.5rem, 4vw, 3rem);
   }
 `;
 
