@@ -107,25 +107,8 @@ const FixButton = styled.div`
 
 /// api연동으로 불러오기 
 /// 어느정도 만들고 목데이터 연결 
-export default function CheckBoard(){
-
-    const [Atd , setAtd] = useState(0);
-
-////부모로 부터 받아온 목데이터터
-    const mockdata = {
-        id : 1,
-        user_name : "김민석",
-        student_num : 202100597,
-        team_id : "1팀",
-        user_type : "FE",
-        attendance : Atd
-    }
-
-    const HandleAttendance = () => {
-        setAtd(prev => (prev === 1 ? 0 : 1));
-    }
-
-    return(
+export default function CheckBoard({ memberdata }) {
+    return (
         <BoardContainer>
             <BoardTitle>
                 <TitleBox>팀</TitleBox>
@@ -133,14 +116,20 @@ export default function CheckBoard(){
                 <TitleBox>출석</TitleBox>
                 <TitleBox>출석수정</TitleBox>
             </BoardTitle>
-            <BoardRow>
-                <RowBox>{mockdata.team_id}</RowBox>
-                <RowBox>{mockdata.user_name}</RowBox>
-                <RowBox>{mockdata.attendance === 1 ? "출석" : "결석"}</RowBox>
-                <FixBox>
-                    <FixButton onClick={HandleAttendance}>출석수정</FixButton>
-                </FixBox>
-            </BoardRow>
+
+            {/* memberdata 배열을 map으로 순회하여 BoardRow 생성 */}
+            {memberdata.map((member, index) => (
+                <BoardRow key={index}>
+                    <RowBox>{member.name}</RowBox> {/* 팀명 */}
+                    <RowBox>{member.teamName}</RowBox> {/* 사용자 이름 */}
+                    <RowBox>{member.attendanceStatus === "PRESENT" ? "출석" : "결석"}</RowBox> {/* 출석 상태 */}
+                    <FixBox>
+                        <FixButton onClick={() => alert(`${member.teamName}님의 출석을 변경합니다.`)}>
+                            출석수정
+                        </FixButton>
+                    </FixBox>
+                </BoardRow>
+            ))}
         </BoardContainer>
-    )
+    );
 }
