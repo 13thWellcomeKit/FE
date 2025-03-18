@@ -1,6 +1,5 @@
-
-import { useState,useEffect } from "react"
-import media from "styled-media-query"
+import { useState, useEffect } from "react";
+import media from "styled-media-query";
 import Header from "../components/Header";
 import styled from "styled-components";
 import axiosInstance from "../axiosInstance";
@@ -12,7 +11,6 @@ const breakpoints = {
   laptop: "1024px",
   desktop: "1200px",
 };
-
 
 const PageContainer = styled.div`
   width: 100%;
@@ -104,12 +102,10 @@ const MypageBody = styled.div`
   flex-direction: row;
   gap: 2rem;
 
-
   @media (max-width: ${breakpoints.laptop}) {
     width: 100%;
     height: auto;
   }
-
 
   @media (max-width: ${breakpoints.tablet}) {
     flex-direction: column;
@@ -218,7 +214,6 @@ const MypageButton = styled.div`
   letter-spacing: -0.03125rem;
   cursor: pointer;
 
-
   &:hover {
     background-color: #ff7710;
     color: #ffff;
@@ -271,7 +266,6 @@ const MypageBox = styled.div`
   border-color: rgba(255, 255, 255, 0.19);
   color: #ffff;
 
-
   @media (max-width: ${breakpoints.mobile}) {
     height: 2.75rem;
     padding: 0.5rem 1.5rem;
@@ -281,56 +275,51 @@ const MypageBox = styled.div`
 export default function MyPage() {
 
 
+  const [userdata, setUserdata] = useState({});
 
-    const [userdata,setUserdata] = useState({});
+  useEffect(() => {
+    fetchMyData();
+  }, []);
 
-    useEffect(() => {
-        fetchMyData();
-    }, []);
+  const fetchMyData = async () => {
+    try {
+      const response = await axiosInstance.get(
+        "https://welcomekitbe.lion.it.kr/api/user/info"
+      );
+      console.log(response.data);
+      setUserdata(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-
-
-    const fetchMyData = async () => {
-        try {
-            const response = await axiosInstance.get('https://welcomekitbe.lion.it.kr/api/user/info'
-          );
-          console.log(response.data);
-          setUserdata(response.data);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      }
-
-
-    return(
-        <>
-            <Header></Header>
-            <PageContainer>
-                <MypageContainer>
-                    <MypageHeader>
-                        <HeaderText>MY Page</HeaderText>
-                        <ButtonContainer>
-                            <MypageButton>프로필 이미지 등록</MypageButton>
-                            <MypageButton>비밀번호 변경</MypageButton>
-                        </ButtonContainer>
-                    </MypageHeader>
-                    <MypageBody>
-                        <ImgBody src={Image}></ImgBody>
-                        <TextBody>
-                            <MypageText>이름</MypageText>
-                            <MypageBox>{userdata.name}</MypageBox>
-                            <MypageText>학번</MypageText>
-                            <MypageBox>{userdata.studentName}</MypageBox>
-                            <MypageText>소속팀</MypageText>
-                            <MypageBox>{userdata.teamName}</MypageBox>
-                            <MypageText>개발트랙</MypageText>
-                            <MypageBox>{userdata.devPart}</MypageBox>
-                        </TextBody>
-                    </MypageBody>
-                </MypageContainer>
-            </PageContainer>
-        </>
-        
-    )
+  return (
+    <>
+      <Header></Header>
+      <PageContainer>
+        <MypageContainer>
+          <MypageHeader>
+            <HeaderText>MY Page</HeaderText>
+            <ButtonContainer>
+              <MypageButton>프로필 이미지 등록</MypageButton>
+              <MypageButton>비밀번호 변경</MypageButton>
+            </ButtonContainer>
+          </MypageHeader>
+          <MypageBody>
+            <ImgBody src={Image}></ImgBody>
+            <TextBody>
+              <MypageText>이름</MypageText>
+              <MypageBox>{userdata.name}</MypageBox>
+              <MypageText>학번</MypageText>
+              <MypageBox>{userdata.studentName}</MypageBox>
+              <MypageText>소속팀</MypageText>
+              <MypageBox>{userdata.teamName}</MypageBox>
+              <MypageText>개발트랙</MypageText>
+              <MypageBox>{userdata.devPart}</MypageBox>
+            </TextBody>
+          </MypageBody>
+        </MypageContainer>
+      </PageContainer>
+    </>
+  );
 }
-
