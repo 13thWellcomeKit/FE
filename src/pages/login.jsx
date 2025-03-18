@@ -1,10 +1,11 @@
-
 import Header from "../components/Header";
 import styled from "styled-components";
 import { ReactComponent as mainlogo } from "../svg/mainlogo.svg";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../axiosInstance";
+import { useAuth } from "../AuthContext";
+
 const breakpoints = {
   mobile: "576px",
   tablet: "768px",
@@ -24,7 +25,6 @@ const PageContainer = styled.div`
   @media (max-width: ${breakpoints.laptop}) {
     gap: 5rem;
   }
-
 
   @media (max-width: ${breakpoints.tablet}) {
     flex-direction: column;
@@ -249,7 +249,6 @@ const TextOverlay = styled.h1`
 `;
 
 const CautionText = styled.h1`
-
   font-family: Pretendard;
   font-size: 0.875rem;
   font-style: normal;
@@ -260,6 +259,7 @@ const CautionText = styled.h1`
   margin-left: 2rem;
 `;
 export default function Login() {
+  const { saveToken } = useAuth();
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -286,17 +286,18 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(
-        "https://welcomekitbe.lion.it.kr/api/auth/sign-in",
-        {
-          studentNum: id,
-          password: password,
-
-        }
-      );
+      const response = await axiosInstance.post("/auth/sign-in", {
+        studentNum: id,
+        password: password,
+      });
 
       console.log("로그인 성공:", response.data);
       alert("로그인 성공!");
+
+      if (response.data.accessToken) {
+        saveToken(response.data.accessToken);
+      }
+
       navigate("/main");
     } catch (error) {
       console.error("로그인 실패:", error.response?.data || error.message);
