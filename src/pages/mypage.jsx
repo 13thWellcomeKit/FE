@@ -1,6 +1,6 @@
 import Header from "../components/Header"
 import styled from "styled-components"
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import axiosInstance from "../axiosInstance"
 import media from "styled-media-query"
 
@@ -95,6 +95,10 @@ const ImgBody = styled.div`
 `
 
 const ButtonContainer = styled.div`
+
+${media.greaterThan("medium")`
+        width: 17.87rem;
+  `}
     ${media.lessThan("medium")`
         width: 19.94rem;
         height: 3.25rem;
@@ -201,19 +205,20 @@ const MypageBox =styled.div`
 
 export default function MyPage(){
 
-    const mockdata = {
-        id : 1,
-        user_name : "김민석",
-        student_num : 202100597,
-        team_id : "1팀",
-        user_type : "FE"
-    }
+    const [userdata,setUserdata] = useState({});
+
+    useEffect(() => {
+        fetchMyData();
+    }, []);
+
+
 
     const fetchMyData = async () => {
         try {
             const response = await axiosInstance.get('https://welcomekitbe.lion.it.kr/api/user/info'
           );
           console.log(response.data);
+          setUserdata(response.data);
         } catch (error) {
           console.error('Error fetching data:', error);
         }
@@ -227,7 +232,7 @@ export default function MyPage(){
             <PageContainer>
                 <MypageContainer>
                     <MypageHeader>
-                        <HeaderText onClick={fetchMyData}>MY Page</HeaderText>
+                        <HeaderText>MY Page</HeaderText>
                         <ButtonContainer>
                             <MypageButton>프로필 이미지 등록</MypageButton>
                             <MypageButton>비밀번호 변경</MypageButton>
@@ -237,13 +242,13 @@ export default function MyPage(){
                         <ImgBody></ImgBody>
                         <TextBody>
                             <MypageText>이름</MypageText>
-                            <MypageBox>{mockdata.user_name}</MypageBox>
+                            <MypageBox>{userdata.name}</MypageBox>
                             <MypageText>학번</MypageText>
-                            <MypageBox>{mockdata.student_num}</MypageBox>
+                            <MypageBox>{userdata.studentName}</MypageBox>
                             <MypageText>소속팀</MypageText>
-                            <MypageBox>{mockdata.team_id}</MypageBox>
+                            <MypageBox>{userdata.teamName}</MypageBox>
                             <MypageText>개발트랙</MypageText>
-                            <MypageBox>{mockdata.user_type}</MypageBox>
+                            <MypageBox>{userdata.devPart}</MypageBox>
                         </TextBody>
                     </MypageBody>
                 </MypageContainer>
