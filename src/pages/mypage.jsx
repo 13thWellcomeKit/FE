@@ -1,7 +1,8 @@
 import Header from "../components/Header"
 import styled from "styled-components"
 import { useState } from "react"
-import axios from "axios"
+import axiosInstance from "../axiosInstance"
+import media from "styled-media-query"
 
 
 const PageContainer = styled.div`
@@ -14,6 +15,17 @@ const PageContainer = styled.div`
     box-sizing: border-box;
     gap: 10.69rem;
     overflow: hidden;
+
+    ${media.lessThan("medium")`
+        display: flex;
+        width: 100%;
+        height: 52.75rem;
+        flex-direction: column;
+        align-items: center;
+        gap: 3rem;
+        box-sizing: border-box;
+        padding : 3rem 1rem;
+      `}
 `
 
 const MypageContainer = styled.div`
@@ -26,6 +38,12 @@ const MypageContainer = styled.div`
     box-sizing: border-box;
     background: rgba(255, 255, 255, 0.19);
     backdrop-filter: blur(10px);
+
+    ${media.lessThan("medium")`
+        width : 22.37rem;
+        height : 72.5rem;
+        padding : 3.75rem 1.22rem;
+  `}
 `
 
 const MypageHeader = styled.div`
@@ -34,6 +52,14 @@ const MypageHeader = styled.div`
     height: 5.56rem;
     flex-direction: row;
     margin-bottom: 2rem;
+    
+    ${media.lessThan("medium")`
+        width : 19.94rem;
+        height : 10.88rem;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+  `}
 `
 
 const MypageBody = styled.div`
@@ -41,6 +67,12 @@ const MypageBody = styled.div`
     width : 81rem;
     height : 32.44rem;
     flex-direction: row;
+
+    ${media.lessThan("medium")`
+        width: 22.38rem;
+        flex-direction: column;
+        height : 52.12rem;
+  `}
 `
 
 const TextBody = styled.div`
@@ -55,6 +87,22 @@ const ImgBody = styled.div`
     width: 32.4375rem;
     height: 32.4375rem;
     background-color: yellow;
+
+    ${media.lessThan("medium")`
+        width: 17.87rem;
+        height: 17.87rem;
+  `}
+`
+
+const ButtonContainer = styled.div`
+    ${media.lessThan("medium")`
+        width: 19.94rem;
+        height: 3.25rem;
+        display : flex;
+        flex-direction : row;
+        gap : 1rem;
+        margin-top : 2rem;
+  `}
 `
 
 const HeaderText = styled.h1`
@@ -67,6 +115,10 @@ const HeaderText = styled.h1`
     font-weight: 700;
     line-height: 140%; /* 5.6rem */
     letter-spacing: -0.1rem;
+
+    ${media.lessThan("medium")`
+        width: 17.87rem;
+  `}
 `
 
 const MypageButton = styled.div`
@@ -92,7 +144,27 @@ const MypageButton = styled.div`
     &:hover {
     background-color: #FF7710;
     color : #FFFF;
+    font-size: 1.25rem;
+    ${media.lessThan("medium")`
+        margin : 0rem;
+        font-family: Pretendard;
+        font-size: 0.875rem;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 100%; /* 1.225rem */
+        letter-spacing: -0.02188rem;
+  `}
   }
+
+  ${media.lessThan("medium")`
+        margin : 0rem;
+        font-family: Pretendard;
+        font-size: 0.875rem;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 100%; /* 1.225rem */
+        letter-spacing: -0.02188rem;
+  `}
 `
 
 const MypageText = styled.h1`
@@ -104,6 +176,10 @@ const MypageText = styled.h1`
     letter-spacing: -0.02813rem;
     color : #FFFF;
     margin : 0;
+
+    ${media.lessThan("medium")`
+
+  `}
 `
 
 const MypageBox =styled.div`
@@ -133,13 +209,10 @@ export default function MyPage(){
         user_type : "FE"
     }
 
-    async function fetchMyData() {
+    const fetchMyData = async () => {
         try {
-          const response = await axios.get('https://welcomekitbe.lion.it.kr/api/user/info', {
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          });
+            const response = await axiosInstance.get('https://welcomekitbe.lion.it.kr/api/user/info'
+          );
           console.log(response.data);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -155,8 +228,10 @@ export default function MyPage(){
                 <MypageContainer>
                     <MypageHeader>
                         <HeaderText onClick={fetchMyData}>MY Page</HeaderText>
-                        <MypageButton>프로필 이미지 등록</MypageButton>
-                        <MypageButton>비밀번호 변경</MypageButton>
+                        <ButtonContainer>
+                            <MypageButton>프로필 이미지 등록</MypageButton>
+                            <MypageButton>비밀번호 변경</MypageButton>
+                        </ButtonContainer>
                     </MypageHeader>
                     <MypageBody>
                         <ImgBody></ImgBody>

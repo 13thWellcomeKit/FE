@@ -1,13 +1,16 @@
 import RouterComponent from './router';
 import './App.css';
 import GlobalStyle from './GlobalStyles';
+import { AuthProvider } from './AuthContext';
 
 
 function App() {
   return (
   <>
-    <GlobalStyle />
-    <RouterComponent />
+    <AuthProvider>
+      <GlobalStyle />
+      <RouterComponent />
+    </AuthProvider>
   </>);
 }
 
