@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import CheckBoard from "../components/Board";
 import styled from "styled-components";
 import { IoMdClose } from "react-icons/io";
+import axiosInstance from "../axiosInstance";
 import axios from "axios";
 import media from "styled-media-query"
 
@@ -170,6 +171,7 @@ const Close = styled(IoMdClose)`
 export default function Check() {
     const [isModalOpen, setIsModalOpen] = useState(false); 
     const [qrImage, setQrImage] = useState(null);
+    const [boarddata , setBoarddata] = useState(null);
 
     
     useEffect(() => {
@@ -188,16 +190,27 @@ export default function Check() {
 
             fetchQr();
         }
-    }, [isModalOpen]); // 모달 상태가 변경될 때 실행
+    }, [isModalOpen]); 
 
-    const openModal = () => setIsModalOpen(true);
+    const openModal = () => {
+        setIsModalOpen(true);
+        fetchBoarddata();};
     const closeModal = () => {
         setIsModalOpen(false);
         setQrImage(null); // 모달 닫을 때 QR 이미지 초기화
     }; 
 
 
-    //여기서 랜더링하고 출석부 정보 받아서 전달달
+        const fetchBoarddata = async () => {
+            try {
+                const response = await axiosInstance.get('/attendance/today/attendance'
+              );
+              console.log(response.data);
+              setBoarddata(response.data);
+            } catch (error) {
+              console.error('Error fetching data:', error);
+            }
+          }
 
     return (
         <>
@@ -215,7 +228,7 @@ export default function Check() {
                         <QrButton>출석부 최신화</QrButton>
                     </ButtonContainer>
                 </TextContainer>
-                <CheckBoard />
+                {boarddata && boarddata.length > 0 ? <CheckBoard memberdata={boarddata} /> : null}
             </PageContainer>
 
             {isModalOpen && (
