@@ -4,6 +4,7 @@ import { ReactComponent as mainlogo } from '../svg/mainlogo.svg'
 import { useNavigate } from "react-router-dom"
 import { useState , useEffect } from "react"
 import axios from "axios"
+import { useAuth } from "../AuthContext"
 
 
 const PageContainer = styled.div`
@@ -200,11 +201,11 @@ const CautionText = styled.h1`
 
 `
 export default function Login(){
-
+    const { saveToken } = useAuth();
     const [id , setId] = useState("");
     const [password , setPassword] = useState("");
     const [error , setError] = useState("");
-    const [pw,setPw] = useState("abc123");
+
     ///임의로 받아올 비번 
     const navigate = useNavigate();
 
@@ -212,13 +213,7 @@ export default function Login(){
         navigate("/signup")
     }
 
-    useEffect(() => {
-        if (pw && password !== pw) {
-            setError("올바르지 않은 비밀번호입니다.");
-        } else {
-            setError("");
-        }
-    }, [password, pw]);
+
 
 
     // const Mockdata = {
@@ -233,6 +228,9 @@ export default function Login(){
                 "studentNum": id,
                 "password": password,
             });
+
+            const accessToken = response.data.accessToken;
+            saveToken(accessToken);
 
             console.log("로그인 성공:", response.data);
             alert("로그인 성공!");
