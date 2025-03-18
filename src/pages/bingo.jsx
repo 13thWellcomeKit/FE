@@ -1,43 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Header from "../components/Header";
 import bingoImage from '../svg/bingo.svg';
 import { BsExclamationTriangle } from 'react-icons/bs';
+import axios from 'axios';
 
 const PageContainer = styled.div`
-    width: 100%;
-    height: 59.38rem;
-    padding: 2.25rem 3.44rem;
+    width : 100%;
+    height : 59.38rem;
+    padding : 2.25rem 3.44rem;
     display: flex;
     flex-direction: row;
     background: var(--Bold-Black, #1C1B1A);
     box-sizing: border-box;
-    gap: 30.69rem;
-    overflow: hidden;
-`;
+    gap: 10.69rem;
 
-const images = [
-    { id: 1, src: bingoImage, content: '미션 1' },
-    { id: 2, src: bingoImage, content: '미션 2' },
-    { id: 3, src: bingoImage, content: '미션 3' },
-    { id: 4, src: bingoImage, content: '미션 4' },
-    { id: 5, src: bingoImage, content: '미션 5' },
-    { id: 6, src: bingoImage, content: '미션 6' },
-    { id: 7, src: bingoImage, content: '미션 7' },
-    { id: 8, src: bingoImage, content: '미션 8' },
-    { id: 9, src: bingoImage, content: '미션 9' },
-];
+`
 
 const BingoTextContainer = styled.div`
-    max-width: 600px;
-    margin-right: 20px;
-    margin-top: 2px;
+    max-width: 37.5rem; 
+    margin-right: 1.25rem; 
+    margin-top: 0.125rem; 
 `;
 
 const BingoTitle = styled.h1`
     color: white;
-    margin: 10px 0;
-    font-size: 96px;
+    margin: 0.625rem 0; 
+    font-size: 6rem; 
     font-weight: bold;
     white-space: nowrap;
 `;
@@ -46,31 +35,31 @@ const BingoDescription = styled.p`
     font-family: Pretendard;
     font-weight: medium;
     color: white;
-    font-size: 24px;
-    margin: 10px 0;
-    margin-top: 40px;
+    font-size: 1.5rem; 
+    margin: 0.625rem 0;
+    margin-top: 2.5rem; 
     font-weight: 500;
 `;
 
 const BingoCaution = styled.h2`
     color: #FF7710;
-    margin: 10px 0;
-    margin-top: 40px;
-    font-size: 32px;
+    margin: 0.625rem 0; 
+    margin-top: 2.5rem; 
+    font-size: 2rem; 
     display: flex;
     align-items: center;
 `;
 
 const CautionIcon = styled(BsExclamationTriangle)`
-    margin-right: 8px;
-    font-size: 32px;
+    margin-right: 0.5rem; 
+    font-size: 2rem; 
 `;
 
 const BingoFooter = styled.p`
     color: white;
-    margin: 10px 0;
-    margin-top: 16px;
-    font-size: 20px;
+    margin: 0.625rem 0; 
+    margin-top: 1rem; 
+    font-size: 1.25rem; 
     font-family: Pretendard;
     font-weight: lighter;
 `;
@@ -78,14 +67,14 @@ const BingoFooter = styled.p`
 const BingoCardContainer = styled.div`
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0px;
-    margin-left: 700px;
-    margin-top: -390px;
+    gap: 0;
+    margin-left: 43.75rem;
+    margin-top: -24.375rem;
 `;
 
 const BingoCard = styled.div`
-    width: 170px;  
-    height: 158px;
+    width: 10.625rem; 
+    height: 9.875rem; 
     cursor: pointer;
     position: relative;
     display: flex;
@@ -97,12 +86,12 @@ const BingoCard = styled.div`
     transition: transform 1s ease-in-out;
 
     ${({ flipped }) => flipped && `
-        transform: rotateY(540deg); /* 1800도 회전: 5번 회전 */
+        transform: rotateY(540deg);
     `}
 `;
 
 const BingoImage = styled.img`
-    width: 100%;  
+    width: 100%;
     height: 100%;
     position: absolute;
     backface-visibility: hidden;
@@ -120,10 +109,10 @@ const CardContent = styled.div`
     left: 0;
     transform: rotateY(180deg);
     backface-visibility: hidden;
-    font-size: 20px;
+    font-size: 1.25rem; 
     font-weight: bold;
-    outline: 1px solid #9D9D9D; /* 테두리를 내부로 */
-    outline-offset: -1px; /* 내부로 밀어 넣기 */
+    outline: 1px solid #9D9D9D;
+    outline-offset: -1px;
 `;
 
 
@@ -146,7 +135,7 @@ const BingoText = () => (
 );
 
 const BingoCardComponent = ({ image, content, flipped, onClick }) => (
-    <BingoCard onClick={onClick} flipped={flipped}>
+    <BingoCard onClick={onClick} flipped={flipped ? true : undefined}> {/* flipped 값이 true일 때만 설정 */}
         <BingoImage src={image} alt={`Bingo ${content}`} />
         <CardContent>{content}</CardContent>
     </BingoCard>
@@ -168,12 +157,35 @@ const BingoBoard = ({ images, flippedCards, handleCardClick }) => (
 
 export default function Bingo() {
     const [flippedCards, setFlippedCards] = useState(Array(9).fill(false));
+    const [missions, setMissions] = useState([]);
+
+    useEffect(() => {
+        axios.get('https://welcomekitbe.lion.it.kr/api/bingo')
+            .then(response => {
+                console.log('서버 응답 데이터:', response.data); 
+                setMissions(response.data);
+            })
+            .catch(error => {
+                console.error('미션 데이터를 가져오는 데 실패했습니다:', error);
+                if (error.response) {
+                    console.error('서버 응답 상태 코드:', error.response.status);
+                    console.error('서버 응답 데이터:', error.response.data);
+                }
+            });
+    }, []);
+    
 
     const handleCardClick = (index) => {
         const newFlippedCards = [...flippedCards];
         newFlippedCards[index] = !newFlippedCards[index];
         setFlippedCards(newFlippedCards);
     };
+
+    const images = missions.map((mission, index) => ({
+        id: index + 1,
+        src: bingoImage,
+        content: mission.content || `미션 ${index + 1}`,
+    }));
 
     return (
         <>
@@ -187,4 +199,5 @@ export default function Bingo() {
         </>
     );
 }
+
 
