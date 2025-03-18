@@ -1,3 +1,4 @@
+
 import { useState,useEffect } from "react"
 import media from "styled-media-query"
 import Header from "../components/Header";
@@ -5,6 +6,12 @@ import styled from "styled-components";
 import axiosInstance from "../axiosInstance";
 import Image from "../image/멋사 로고.png";
 
+const breakpoints = {
+  mobile: "576px",
+  tablet: "768px",
+  laptop: "1024px",
+  desktop: "1200px",
+};
 
 const breakpoints = {
   mobile: "576px",
@@ -103,10 +110,12 @@ const MypageBody = styled.div`
   flex-direction: row;
   gap: 2rem;
 
+
   @media (max-width: ${breakpoints.laptop}) {
     width: 100%;
     height: auto;
   }
+
 
   @media (max-width: ${breakpoints.tablet}) {
     flex-direction: column;
@@ -215,6 +224,7 @@ const MypageButton = styled.div`
   letter-spacing: -0.03125rem;
   cursor: pointer;
 
+
   &:hover {
     background-color: #ff7710;
     color: #ffff;
@@ -267,15 +277,22 @@ const MypageBox = styled.div`
   border-color: rgba(255, 255, 255, 0.19);
   color: #ffff;
 
+
   @media (max-width: ${breakpoints.mobile}) {
     height: 2.75rem;
     padding: 0.5rem 1.5rem;
   }
 `;
 
+export default function MyPage() {
+  const mockdata = {
+    id: 1,
+    user_name: "김민석",
+    student_num: 202100597,
+    team_id: "1팀",
+    user_type: "FE",
+  };
 
-
-export default function MyPage(){
 
     const [userdata,setUserdata] = useState({});
 
@@ -328,3 +345,4 @@ export default function MyPage(){
         
     )
 }
+

@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext"; 
 import axiosInstance from "../axiosInstance";
 
-
 const breakpoints = {
   mobile: "576px",
   tablet: "768px",
@@ -266,13 +265,16 @@ export default function Login() {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
   const { saveToken } = useAuth(); 
-  ///임의로 받아올 비번
+
+  
   const navigate = useNavigate();
 
   const GotoSignup = () => {
     navigate("/signup");
   };
+
 
 
   const handleLogin = async () => {
@@ -294,6 +296,7 @@ export default function Login() {
         alert("로그인에 실패했습니다.");
     }
 };
+
 
   return (
     <>
