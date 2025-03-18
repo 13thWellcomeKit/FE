@@ -4,7 +4,9 @@ import styled from "styled-components";
 import { ReactComponent as mainlogo } from "../svg/mainlogo.svg";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { useAuth } from "../AuthContext"; 
+import axiosInstance from "../axiosInstance";
+
 const breakpoints = {
   mobile: "576px",
   tablet: "768px",
@@ -263,48 +265,38 @@ export default function Login() {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [pw, setPw] = useState("abc123");
-  ///임의로 받아올 비번
+
+  const { saveToken } = useAuth(); 
+
+  
   const navigate = useNavigate();
 
   const GotoSignup = () => {
     navigate("/signup");
   };
 
-  useEffect(() => {
-    if (pw && password !== pw) {
-      setError("올바르지 않은 비밀번호입니다.");
-    } else {
-      setError("");
-    }
-  }, [password, pw]);
 
-  // const Mockdata = {
-  //     student_num : id,
-  //     password : password
-  // }
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(
-        "https://welcomekitbe.lion.it.kr/api/auth/sign-in",
-        {
-          studentNum: id,
-          password: password,
+        const response = await axiosInstance.post("/auth/sign-in", {
+            studentNum: id,
+            password: password,
+        });
 
-        }
-      );
+        const accessToken = response.data.accessToken;
+        console.log("받은 토큰:", accessToken); 
+        saveToken(accessToken); 
 
-      console.log("로그인 성공:", response.data);
-      alert("로그인 성공!");
-      navigate("/main");
+        console.log("로그인 성공:", response.data);
+        alert("로그인 성공!");
+        navigate("/main");
     } catch (error) {
-      console.error("로그인 실패:", error.response?.data || error.message);
-      alert("로그인에 실패했습니다.");
+        console.error("로그인 실패:", error.response?.data || error.message);
+        alert("로그인에 실패했습니다.");
     }
-  };
+};
 
-  /// 콘솔 확인 완료
 
   return (
     <>
