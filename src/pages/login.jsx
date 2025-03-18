@@ -1,3 +1,4 @@
+
 import Header from "../components/Header";
 import styled from "styled-components";
 import { ReactComponent as mainlogo } from "../svg/mainlogo.svg";
@@ -23,6 +24,7 @@ const PageContainer = styled.div`
   @media (max-width: ${breakpoints.laptop}) {
     gap: 5rem;
   }
+
 
   @media (max-width: ${breakpoints.tablet}) {
     flex-direction: column;
@@ -247,6 +249,7 @@ const TextOverlay = styled.h1`
 `;
 
 const CautionText = styled.h1`
+
   font-family: Pretendard;
   font-size: 0.875rem;
   font-style: normal;
@@ -288,6 +291,7 @@ export default function Login() {
         {
           studentNum: id,
           password: password,
+
         }
       );
 
