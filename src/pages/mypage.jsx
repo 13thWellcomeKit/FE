@@ -13,12 +13,6 @@ const breakpoints = {
   desktop: "1200px",
 };
 
-const breakpoints = {
-  mobile: "576px",
-  tablet: "768px",
-  laptop: "1024px",
-  desktop: "1200px",
-};
 
 const PageContainer = styled.div`
   width: 100%;
@@ -285,13 +279,7 @@ const MypageBox = styled.div`
 `;
 
 export default function MyPage() {
-  const mockdata = {
-    id: 1,
-    user_name: "김민석",
-    student_num: 202100597,
-    team_id: "1팀",
-    user_type: "FE",
-  };
+
 
 
     const [userdata,setUserdata] = useState({});

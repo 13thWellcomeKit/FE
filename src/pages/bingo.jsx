@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Header from "../components/Header";
 import bingoImage from '../svg/bingo.svg';
 import { BsExclamationTriangle } from 'react-icons/bs';
-import axios from 'axios';
+import axiosInstance from "../axiosInstance";
 
 const PageContainer = styled.div`
     width : 100%;
@@ -160,9 +160,9 @@ export default function Bingo() {
     const [missions, setMissions] = useState([]);
 
     useEffect(() => {
-        axios.get('https://welcomekitbe.lion.it.kr/api/bingo')
+        axiosInstance.get('/bingo')
             .then(response => {
-                console.log('서버 응답 데이터:', response.data); 
+                console.log('서버 응답 데이터:', response.data);
                 setMissions(response.data);
             })
             .catch(error => {
