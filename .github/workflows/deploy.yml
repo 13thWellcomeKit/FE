@@ -1,0 +1,25 @@
+name: Deploy React App
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v3
+
+      - name: Docker 이미지 빌드 (Dockerfile 기반)
+        run: docker build -t react-app:latest .
+
+      - name: 기존 컨테이너 중지 및 삭제
+        run: |
+          docker stop react-container || true
+          docker rm react-container || true
+
+      - name: 새 컨테이너 실행
+        run: docker run -d --name react-container -p 3000:3000 react-app:latest
