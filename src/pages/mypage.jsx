@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import styled from "styled-components";
 import axiosInstance from "../axiosInstance";
-import Image from "../image/멋사 로고.png";
+import Image from "../image/Logo.png";
 import PageContainer from "../components/PageContainer";
 import breakpoints from "../components/Breakpoints";
 
