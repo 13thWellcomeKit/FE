@@ -281,7 +281,7 @@ export default function Bingo() {
       }
     } catch (error) {
       console.error("빙고 승인이 실패했습니다:", error);
-      alert("승인 중 오류가 발생했습니다.");
+      alert("이미 선택된 미션이 있습니다. 관리자 승인을 기다려주세요.");
     } finally {
       setIsProcessing(false);
     }
