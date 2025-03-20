@@ -86,7 +86,7 @@ const BingoCard = styled.div`
   ${({ flipped }) =>
     flipped &&
     `
-        transform: rotateY(1260deg);
+        transform: rotateY(540deg);
     `}
 
   @media (max-width: ${breakpoints.laptop}) {
@@ -125,7 +125,7 @@ const CardContent = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  transform: rotateY(180deg);
+  transform: rotateY(540deg);
   backface-visibility: hidden;
   font-size: 1.25rem;
   font-weight: bold;
