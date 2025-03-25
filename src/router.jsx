@@ -10,7 +10,6 @@ import Login from "./pages/login";
 import SignUp from "./pages/sign";
 import QRCodeScanner from "./pages/qrscanner";
 import ChangePassword from "./pages/ChangePassword";
-import ProfileImage from "./pages/ProfileImage";
 
 const RouterComponent = () => {
   return (
