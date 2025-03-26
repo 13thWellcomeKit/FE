@@ -4,7 +4,7 @@ import { Cookies } from "react-cookie";
 const cookies = new Cookies(); // ✅ 전역에서 쿠키 인스턴스 생성
 
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_SERVER,
+  baseURL: "https://welcomekitbe.lion.it.kr/api",
 });
 
 // 요청 인터셉터 (Authorization 헤더 자동 추가)
