@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { BsInstagram } from "react-icons/bs";
 import { SiVelog } from "react-icons/si";
-import Header from "../components/Header";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { Page, PageHead } from "../components/ui";
+import { bp, color, radius, size } from "../theme";
 
 import introduce1 from "../image/introduce1.png";
 import Logo from "../image/LIKELION UNIV._white@3x.png";
 import Together from "../image/IMG_9678 1.png";
-import Left from "../image/Left.svg";
-import Right from "../image/Right.svg";
 import Image1 from "../image/image 12.png";
 import Image2 from "../image/image 13.png";
 import Image3 from "../image/image 14.png";
@@ -24,538 +24,230 @@ import Image12 from "../image/image 11.png";
 import Image13 from "../image/image 24.png";
 import Image14 from "../image/image 25.png";
 
-const breakpoints = {
-  mobile: "576px",
-  tablet: "768px",
-  laptop: "1024px",
-  desktop: "1200px",
-};
+const CAROUSEL_IMAGES = [Image9, Image10, Image11];
+const SCROLL_IMAGES = [Image1, Image2, Image3, Image4, Image5, Image6, Image7, Image8];
 
-const Frame = styled.div`
-  background: #1c1b1a;
-  width: 100%;
-  margin: 0 auto;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
+const Intro = styled.section`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 3rem;
   align-items: center;
-`;
+  margin-bottom: 5rem;
 
-const Container = styled.div`
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: center;
-  gap: 320px;
-  padding-top: 54px;
-  max-width: 1440px;
-  padding: 0 20px;
-  box-sizing: border-box;
-
-  @media (max-width: ${breakpoints.tablet}) {
-    gap: 160px;
-    padding: 30px 20px;
+  @media (max-width: ${bp.laptop}) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 `;
 
-const Contents = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 240px;
-  align-self: stretch;
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
+const Body = styled.p`
+  max-width: 38rem;
+  font-size: ${size.lg};
+  line-height: 1.75;
+  color: #d9d3cb;
 
-  @media (max-width: ${breakpoints.tablet}) {
-    gap: 120px;
+  @media (max-width: ${bp.tablet}) {
+    font-size: ${size.md};
   }
 `;
 
-const TitleContainer = styled.div`
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: center;
-  gap: 80px;
-
-  @media (max-width: ${breakpoints.tablet}) {
-    gap: 40px;
-  }
-`;
-
-const TitleText = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  align-self: stretch;
-`;
-
-const Title = styled.p`
-  color: #fff;
-  text-align: center;
-  font-family: Montserrat;
-  font-size: 32px;
-  font-weight: 600;
-  line-height: 140%;
-  letter-spacing: -0.8px;
-  margin: 0;
-
-  @media (max-width: ${breakpoints.tablet}) {
-    font-size: 28px;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: 24px;
-  }
-`;
-
-const SideTitle = styled(Title)`
-  text-align: ${(props) => (props.alignRight ? "right" : "left")};
-
-  @media (max-width: ${breakpoints.tablet}) {
-    text-align: center;
-  }
-`;
-
-const Explain = styled.p`
-  color: #fff;
-  text-align: center;
-  font-family: Pretendard;
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 140%;
-  letter-spacing: -0.5px;
-  margin: 0;
-
-  @media (max-width: ${breakpoints.tablet}) {
-    font-size: 16px;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    br {
-      display: none;
-    }
-  }
-`;
-
-const ResponsiveImage = styled.img`
+const Figure = styled.img`
+  display: block;
   width: 100%;
   height: auto;
-  max-width: ${(props) => props.maxWidth || "100%"};
-  max-height: ${(props) => props.maxHeight || "auto"};
-  object-fit: contain;
+  border-radius: ${radius.panel};
+  background: ${color.surface};
 `;
 
-const Start = styled.div`
-  color: #fff;
-  text-align: center;
-  font-family: Pretendard;
-  font-size: 36px;
-  font-weight: 600;
-  line-height: 140%;
-  letter-spacing: -0.9px;
-  padding: 0 20px;
-  margin: 0;
+const Statement = styled.p`
+  max-width: 44rem;
+  margin: 0 0 3rem;
+  font-size: ${size.x2};
+  font-weight: 700;
+  line-height: 1.35;
 
-  span {
-    color: #ff7710;
-  }
-
-  @media (max-width: ${breakpoints.tablet}) {
-    font-size: 28px;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: 22px;
+  @media (max-width: ${bp.tablet}) {
+    font-size: ${size.xl};
   }
 `;
 
-const First = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 80px;
-  width: 100%;
-
-  @media (max-width: ${breakpoints.tablet}) {
-    gap: 40px;
-  }
+const Points = styled.ol`
+  list-style: none;
+  margin: 0 0 5rem;
+  padding: 0;
+  counter-reset: point;
 `;
 
-const SubTitle = styled.div`
-  color: #fff;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-family: Pretendard;
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 140%;
-  letter-spacing: -0.6px;
-  flex-wrap: wrap;
-  padding: 0 20px;
-  margin: 0;
+const Point = styled.li`
+  counter-increment: point;
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0 1.5rem;
+  padding: 2.5rem 0;
+  border-top: 1px solid ${color.line};
 
-  span {
-    color: #ff7710;
+  &::before {
+    content: counter(point);
+    font-family: "Montserrat", sans-serif;
+    font-weight: 800;
+    font-size: ${size.x3};
+    line-height: 1;
+    color: ${color.brand};
   }
 
-  @media (max-width: ${breakpoints.tablet}) {
-    font-size: 20px;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: 18px;
-  }
-`;
-
-const Track = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 120px;
-  align-self: stretch;
-  justify-content: center;
-  flex-wrap: wrap;
-
-  @media (max-width: ${breakpoints.laptop}) {
-    gap: 60px;
-  }
-
-  @media (max-width: ${breakpoints.tablet}) {
-    gap: 30px;
+  & > div {
+    display: flex;
     flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+  }
+
+  h2 {
+    font-size: ${size.xl};
+    line-height: 1.35;
+  }
+
+  @media (max-width: ${bp.tablet}) {
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: 0 1rem;
+
+    &::before {
+      font-size: ${size.x2};
+    }
   }
 `;
 
-const TrackName = styled.p`
-  color: #fff;
-  text-align: center;
-  font-family: Pretendard;
-  font-size: 48px;
-  font-weight: 600;
-  line-height: 140%;
-  letter-spacing: -1.2px;
-  margin: 0;
-
-  @media (max-width: ${breakpoints.laptop}) {
-    font-size: 40px;
-  }
-
-  @media (max-width: ${breakpoints.tablet}) {
-    font-size: 32px;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: 28px;
-  }
-`;
-
-const SmallText = styled.p`
-  color: #9d9d9d;
-  text-align: center;
-  font-family: Pretendard;
-  font-size: 16px;
-  font-weight: 300;
-  line-height: 140%;
-  letter-spacing: -0.4px;
-  margin: 0;
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: 14px;
-  }
-`;
-
-const Second = styled.div`
+const Tracks = styled.div`
   display: flex;
-  width: 45vw;
-  max-width: 670px;
-  aspect-ratio: 1 / 1;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: linear-gradient(
-    180deg,
-    rgba(254, 88, 38, 0.5) 0%,
-    rgba(0, 0, 0, 0) 47.5%
-  );
-  text-align: center;
-  padding: 20px;
-  box-sizing: border-box;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 
-  @media (max-width: ${breakpoints.laptop}) {
-    width: 45vw;
-  }
-
-  @media (max-width: ${breakpoints.tablet}) {
-    width: 50vw;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    width: 75vw;
-    max-width: 280px;
+  span {
+    padding: 0.5rem 1rem;
+    border-radius: ${radius.pill};
+    border: 1px solid ${color.line};
+    font-weight: 600;
   }
 `;
 
-const SecondContainer = styled.div`
-  display: flex;
-  width: 90%;
-  max-width: 550px;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 30px;
-
-  @media (max-width: ${breakpoints.tablet}) {
-    max-width: 280px;
-    gap: 20px;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    max-width: 230px;
-    gap: 15px;
-  }
+const Note = styled.p`
+  color: ${color.muted};
+  font-size: ${size.sm};
 `;
 
-const Text = styled.p`
-  color: #fff;
-  text-align: center;
-  font-family: Pretendard;
-  font-size: 20px;
-  font-weight: 300;
-  line-height: 140%;
-  letter-spacing: -0.5px;
-  margin: 0;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  max-width: 100%;
-
-  @media (max-width: ${breakpoints.tablet}) {
-    font-size: 16px;
-    max-width: 85%;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: 14px;
-    max-width: 80%;
-  }
+const marquee = keyframes`
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 `;
 
-const SideText = styled(Text)`
-  text-align: ${(props) => (props.alignRight ? "right" : "left")};
-  white-space: pre-line;
-
-  @media (max-width: ${breakpoints.tablet}) {
-    text-align: center;
-    white-space: normal;
-  }
-`;
-
-const ContentsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 48px;
-  align-self: stretch;
-  align-items: center;
-  width: 100%;
-
-  @media (max-width: ${breakpoints.tablet}) {
-    gap: 30px;
-  }
-`;
-
-const ImageContainer = styled.div`
-  width: 100%;
+const Marquee = styled.div`
   overflow: hidden;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-`;
+  border-radius: ${radius.control};
+  background: #ffffff;
+  padding: 1rem 0;
 
-const ImageContent = styled.div`
-  display: flex;
-  gap: 24px;
-  width: calc(100% * 2);
-  animation: scroll 20s linear infinite;
-
-  @keyframes scroll {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
+  div {
+    display: flex;
+    gap: 2.5rem;
+    width: max-content;
+    animation: ${marquee} 40s linear infinite;
   }
-
   img {
-    height: auto;
-    width: 100%;
-    max-width: 300px;
-    aspect-ratio: 1/1;
-    object-fit: contain;
-
-    @media (max-width: ${breakpoints.tablet}) {
-      max-width: 200px;
-    }
-
-    @media (max-width: ${breakpoints.mobile}) {
-      max-width: 150px;
-    }
+    height: 2.5rem;
+    width: auto;
+  }
+  &:hover div {
+    animation-play-state: paused;
   }
 `;
 
-const ImageClick = styled.div`
-  display: flex;
+const Carousel = styled.div`
+  position: relative;
+
+  button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2.75rem;
+    height: 2.75rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: none;
+    background: rgba(28, 27, 26, 0.8);
+    color: ${color.text};
+    font-size: 1.4rem;
+    cursor: pointer;
+  }
+  button:first-of-type {
+    left: 0.75rem;
+  }
+  button:last-of-type {
+    right: 0.75rem;
+  }
+`;
+
+const Dots = styled.p`
+  margin-top: 0.75rem;
+  text-align: center;
+  color: ${color.muted};
+  font-size: ${size.sm};
+  font-variant-numeric: tabular-nums;
+`;
+
+const Activity = styled.article`
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 2.5rem;
   align-items: center;
-  justify-content: center;
-  gap: 80px;
-  width: 100%;
+  margin-bottom: 3rem;
 
-  @media (max-width: ${breakpoints.laptop}) {
-    gap: 40px;
+  h3 {
+    font-size: ${size.xl};
+    margin-bottom: 0.75rem;
+  }
+  p {
+    color: #d9d3cb;
+    line-height: 1.75;
   }
 
-  @media (max-width: ${breakpoints.tablet}) {
-    gap: 20px;
-  }
-
-  img {
-    object-fit: contain;
-
-    &.arrow {
-      width: 30px;
-      height: auto;
-      cursor: pointer;
-
-      @media (max-width: ${breakpoints.mobile}) {
-        width: 20px;
-      }
-    }
-
-    &.content {
-      width: 100%;
-      max-width: 904px;
-      height: auto;
-      max-height: 468px;
-    }
+  @media (max-width: ${bp.laptop}) {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
 `;
 
-const SideImage = styled.div`
+const Closing = styled.section`
+  margin-top: 5rem;
+  padding-top: 3rem;
+  border-top: 1px solid ${color.line};
+`;
+
+const Socials = styled.div`
   display: flex;
-  align-items: center;
-  gap: 24px;
-  width: 100%;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 
-  @media (max-width: ${breakpoints.laptop}) {
-    flex-direction: column;
+  a {
+    display: inline-flex;
     align-items: center;
-    gap: 20px;
+    gap: 0.75rem;
+    padding: 0.9rem 1.4rem;
+    border-radius: ${radius.pill};
+    border: 1px solid ${color.line};
+    color: ${color.text};
+    text-decoration: none;
+    font-weight: 600;
   }
-
-  @media (max-width: ${breakpoints.tablet}) {
-    flex-direction: column;
-    align-items: center;
+  a:hover {
+    border-color: ${color.brand};
   }
-`;
-
-const SideContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: ${(props) => (props.alignRight ? "flex-end" : "flex-start")};
-  gap: 48px;
-  width: 100%;
-  @media (max-width: ${breakpoints.laptop}) {
-    align-items: center;
-  }
-  @media (max-width: ${breakpoints.tablet}) {
-    gap: 30px;
-    align-items: center;
-  }
-`;
-
-const SocialContainer = styled(SideImage)`
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  max-width: 900px;
-  width: auto;
-
-  @media (max-width: ${breakpoints.tablet}) {
-    flex-direction: column;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 40px;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    flex-direction: column;
-    gap: 30px;
-  }
-`;
-
-const SocialItem = styled(SideImage)`
-  @media (max-width: ${breakpoints.tablet}) {
-    flex-direction: row;
-    gap: 15px;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    gap: 10px;
-  }
-`;
-
-const SocialIcon = styled.div`
-  width: 92px;
-  height: 92px;
-  color: #ff7710;
-
-  @media (max-width: ${breakpoints.tablet}) {
-    width: 72px;
-    height: 72px;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    width: 52px;
-    height: 52px;
-  }
-
   svg {
-    width: 100%;
-    height: 100%;
+    color: ${color.brand};
+    font-size: 1.25rem;
   }
 `;
-
-const SocialText = styled(Start)`
-  @media (max-width: ${breakpoints.tablet}) {
-    font-size: 22px;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: 18px;
-  }
-`;
-
-const CAROUSEL_IMAGES = [Image9, Image10, Image11];
-const SCROLL_IMAGES = [
-  Image1,
-  Image2,
-  Image3,
-  Image4,
-  Image5,
-  Image6,
-  Image7,
-  Image8,
-];
 
 export default function Introduce() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -572,219 +264,139 @@ export default function Introduce() {
     );
   };
 
-  const handleSocialClick = (url) => {
-    window.location.href = url;
-  };
-
   return (
-    <Frame>
-      <Header />
-      <Container>
-        <Contents>
-          <TitleContainer>
-            <TitleText>
-              <Title>About us</Title>
-              <Explain>
-                2013년, 서울대학교에서 이두희 대표를 필두로 시작된
-                '멋쟁이사자처럼 대학'. 현재는 국내외 121개 대학, 4천여 명이
-                활동하는 <br />
-                국내 최대 규모의 IT 창업 동아리로 자리매김하였습니다. "내
-                아이디어를 내 손으로 실현한다"는 모토로, <br />
-                누구든지 자신이 원하는 IT 서비스를 구현할 수 있도록 각종
-                스터디와 네트워킹, 행사를 지원하고 있습니다.
-              </Explain>
-            </TitleText>
-            <ResponsiveImage src={introduce1} alt="소개 이미지" />
-          </TitleContainer>
+    <Page>
+      <PageHead title="About us" display />
 
-          <Start>
-            멋쟁이 사자처럼 대학은 13기를 맞이해,{" "}
-            <span>보다 전문적인 IT 창업 동아리</span>로 새롭게 시작합니다.
-          </Start>
+      <Intro>
+        <Body>
+          2013년, 서울대학교에서 이두희 대표를 필두로 시작된 '멋쟁이사자처럼
+          대학'. 현재는 국내외 121개 대학, 4천여 명이 활동하는 국내 최대 규모의
+          IT 창업 동아리로 자리매김하였습니다. "내 아이디어를 내 손으로
+          실현한다"는 모토로, 누구든지 자신이 원하는 IT 서비스를 구현할 수 있도록
+          각종 스터디와 네트워킹, 행사를 지원하고 있습니다.
+        </Body>
+        <Figure src={introduce1} alt="멋쟁이사자처럼 활동 사진" />
+      </Intro>
 
-          <First>
-            <SubTitle>
-              1. 개발 트랙을 &nbsp;<span>3가지</span>로 나누어 진행합니다.
-            </SubTitle>
-            <Track>
-              <TrackName>FE(프론트엔드)</TrackName>
-              <TrackName>BE(백엔드)</TrackName>
-              <TrackName>FE or BE(공통)</TrackName>
-            </Track>
-            <SmallText>
-              * 공통 트랙은 5주차 이후, FE와 BE 중 트랙 선택 필요
-            </SmallText>
-          </First>
+      <Statement>
+        멋쟁이사자처럼 대학은 13기를 맞이해, 보다 전문적인 IT 창업 동아리로
+        새롭게 시작합니다.
+      </Statement>
 
-          <Second>
-            <SecondContainer>
-              <SubTitle>
-                2. 2024년보다 &nbsp;<span> 더욱 강화된 교육</span>을 제공합니다.
-              </SubTitle>
-              <ResponsiveImage src={Logo} alt="멋사 로고" maxWidth="441px" />
-              <Text>
-                멋쟁이사자처럼 대학 교육 플랫폼 TECHIT 강좌를 무상 제공합니다.
-                <br />
-                활동 시 선택한 트랙이 아니여도 모든 강의를 수강하실 수 있습니다.
-              </Text>
-            </SecondContainer>
-          </Second>
+      <Points>
+        <Point>
+          <div>
+            <h2>개발 트랙을 3가지로 나누어 진행합니다.</h2>
+            <Tracks>
+              <span>FE (프론트엔드)</span>
+              <span>BE (백엔드)</span>
+              <span>FE or BE (공통)</span>
+            </Tracks>
+            <Note>공통 트랙은 5주차 이후 FE와 BE 중 하나를 선택합니다.</Note>
+          </div>
+        </Point>
 
-          <ContentsContainer>
-            <SubTitle>
-              3. &nbsp;<span>각종 해커톤</span>을 통해 여러분의 코딩 실력을
-              상승시킬 수 있습니다.
-            </SubTitle>
-            <Text>
-              🦁 중앙아이디어톤(5월), 중앙해커톤(8월)을 비롯한 각종 연합해커톤을
-              통해 여러 사람과 교류하며 코딩 실력도 향상시킬 수 있습니다.
-            </Text>
-            <ResponsiveImage
-              src={Together}
-              alt="함께하는 이미지"
-              maxWidth="906px"
-              maxHeight="468px"
-            />
-            <ImageContainer>
-              <ImageContent imageCount={SCROLL_IMAGES.length}>
-                {SCROLL_IMAGES.map((src, i) => (
-                  <img key={i} src={src} alt={`logo-${i}`} />
+        <Point>
+          <div>
+            <h2>2024년보다 더욱 강화된 교육을 제공합니다.</h2>
+            <Body>
+              멋쟁이사자처럼 대학 교육 플랫폼 TECHIT 강좌를 무상 제공합니다.
+              활동 중에는 선택한 트랙이 아니어도 모든 강의를 수강할 수 있습니다.
+            </Body>
+            <img src={Logo} alt="LIKELION UNIV." style={{ width: "min(100%, 18rem)" }} />
+          </div>
+        </Point>
+
+        <Point>
+          <div>
+            <h2>각종 해커톤으로 코딩 실력을 키울 수 있습니다.</h2>
+            <Body>
+              중앙아이디어톤(5월), 중앙해커톤(8월)을 비롯한 각종 연합해커톤에서
+              여러 사람과 교류하며 실력을 키웁니다.
+            </Body>
+            <Figure src={Together} alt="해커톤 단체 사진" />
+            <Marquee aria-label="함께한 학교와 단체">
+              <div>
+                {[...SCROLL_IMAGES, ...SCROLL_IMAGES].map((src, i) => (
+                  <img key={i} src={src} alt="" />
                 ))}
-                {SCROLL_IMAGES.map((src, i) => (
-                  <img
-                    key={`duplicate-${i}`}
-                    src={src}
-                    alt={`logo-duplicate-${i}`}
-                  />
-                ))}
-              </ImageContent>
-            </ImageContainer>
-          </ContentsContainer>
+              </div>
+            </Marquee>
+          </div>
+        </Point>
 
-          <ContentsContainer>
-            <SubTitle>
-              4. 다양한 개발 경험과 능력 있는 운영진들이 &nbsp;
-              <span>직접 세션</span>을 진행합니다.
-            </SubTitle>
-            <Text>
-              🦁 총 8분의 운영진이 각 팀 프로젝트의 팀장을 맡고 정성들여 세션도
-              진행합니다.
-            </Text>
-            <ImageClick>
-              <img
-                src={Left}
-                onClick={goToPrevious}
-                className="arrow"
-                alt="이전"
-              />
-              <img
+        <Point>
+          <div>
+            <h2>개발 경험이 많은 운영진이 직접 세션을 진행합니다.</h2>
+            <Body>
+              운영진 8명이 각 팀 프로젝트의 팀장을 맡고 세션도 직접 준비합니다.
+            </Body>
+            <Carousel>
+              <Figure
                 src={CAROUSEL_IMAGES[currentIndex]}
-                className="content"
-                alt={`세션 이미지 ${currentIndex + 1}`}
+                alt={`세션 사진 ${currentIndex + 1}`}
               />
-              <img
-                src={Right}
-                onClick={goToNext}
-                className="arrow"
-                alt="다음"
-              />
-            </ImageClick>
-          </ContentsContainer>
+              <button onClick={goToPrevious} aria-label="이전 사진">
+                <IoIosArrowBack />
+              </button>
+              <button onClick={goToNext} aria-label="다음 사진">
+                <IoIosArrowForward />
+              </button>
+            </Carousel>
+            <Dots>
+              {currentIndex + 1} / {CAROUSEL_IMAGES.length}
+            </Dots>
+          </div>
+        </Point>
 
-          <ContentsContainer>
-            <SubTitle>
-              5. 2학기 &nbsp;<span>추가 트랙 구성</span>&nbsp;( NEW❗)
-            </SubTitle>
-            <Text>
-              추가적인 트랙 선택을 통한 다양한 교육 프로그램 이수가 가능합니다.
-            </Text>
-            <ResponsiveImage
-              src={Image12}
-              alt="추가 트랙"
-              maxWidth="904px"
-              maxHeight="320px"
-            />
-          </ContentsContainer>
+        <Point>
+          <div>
+            <h2>2학기에는 트랙이 추가됩니다.</h2>
+            <Body>추가 트랙을 선택해 다양한 교육 프로그램을 이수할 수 있습니다.</Body>
+            <Figure src={Image12} alt="2학기 추가 트랙 안내" />
+          </div>
+        </Point>
+      </Points>
 
-          <Start>
-            추가적으로, 한국외대(글로벌) 멋사는 다음과 같은 <span>특별한</span>{" "}
-            활동을 진행합니다.
-          </Start>
+      <Statement>한국외대(글로벌) 멋사는 이런 활동도 합니다.</Statement>
 
-          <SideImage>
-            <ResponsiveImage
-              src={Image13}
-              alt="교육봉사"
-              maxWidth="672px"
-              maxHeight="336px"
-            />
-            <SideContainer>
-              <SideTitle>풍생고 교육봉사 활동</SideTitle>
-              <SideText>
-                풍생고 학생들을 대상으로 코딩 멘토링 프로그램을 진행합니다.
-                프론트엔드와 백엔드 파트로 나누어 진행되며, 멘토들은 학생들과
-                함께 스터디를 운영하거나 프로젝트를 수행합니다. 풍생고 교육봉사
-                진행 시, 봉사활동 시간이 인정되며 소정의 강사비도 지급됩니다.
-              </SideText>
-            </SideContainer>
-          </SideImage>
+      <Activity>
+        <Figure src={Image13} alt="풍생고 교육봉사" />
+        <div>
+          <h3>풍생고 교육봉사</h3>
+          <p>
+            풍생고 학생들에게 코딩 멘토링을 합니다. 프론트엔드와 백엔드로 나누어
+            스터디를 운영하거나 함께 프로젝트를 합니다. 봉사활동 시간이
+            인정되고 소정의 강사비도 지급됩니다.
+          </p>
+        </div>
+      </Activity>
 
-          <SideImage>
-            <SideContainer alignRight>
-              <SideTitle alignRight>멋쟁이사자처럼 대학 연합해커톤</SideTitle>
-              <SideText alignRight>
-                멋사 대학에 소속되어 있는 다양한 학교와 함께 해커톤을
-                진행합니다. IT 분야에 관심이 있는 학생들 간의 소통과
-                커뮤니케이션을 증진시키고, 서로의 아이디어와 경험을 나눌 수 있는
-                네트워킹 기회를 제공합니다.
-              </SideText>
-            </SideContainer>
-            <ResponsiveImage
-              src={Image14}
-              alt="연합해커톤"
-              maxWidth="850px"
-              maxHeight="301px"
-            />
-          </SideImage>
+      <Activity>
+        <Figure src={Image14} alt="멋쟁이사자처럼 대학 연합해커톤" />
+        <div>
+          <h3>멋쟁이사자처럼 대학 연합해커톤</h3>
+          <p>
+            멋사 대학에 속한 여러 학교와 함께 해커톤을 엽니다. IT에 관심 있는
+            학생끼리 아이디어와 경험을 나누는 네트워킹 자리입니다.
+          </p>
+        </div>
+      </Activity>
 
-          <Start>
-            13기 아기사자 여러분, 1년동안 열정적으로 참여하시어 꼭{" "}
-            <span>수료</span>하시길 바랍니다!
-          </Start>
-        </Contents>
-
-        <First>
-          <Start>한국외대(글로벌) 멋사에 대해 조금 더 알고 싶다면?</Start>
-          <SocialContainer>
-            <SocialItem
-              onClick={() =>
-                handleSocialClick(
-                  "https://www.instagram.com/hufsglobal_likelion/"
-                )
-              }
-            >
-              <SocialIcon>
-                <BsInstagram />
-              </SocialIcon>
-              <SocialText>
-                <span>Instagram</span>&nbsp; hufs global
-              </SocialText>
-            </SocialItem>
-            <SocialItem
-              onClick={() =>
-                handleSocialClick("https://velog.io/@hufsglobal09/posts")
-              }
-            >
-              <SocialIcon>
-                <SiVelog />
-              </SocialIcon>
-              <SocialText>
-                <span>Velog</span>&nbsp; hufs global
-              </SocialText>
-            </SocialItem>
-          </SocialContainer>
-        </First>
-      </Container>
-    </Frame>
+      <Closing>
+        <Statement style={{ marginBottom: 0 }}>
+          13기 아기사자 여러분, 1년 동안 열정적으로 참여해 꼭 수료하시길 바랍니다!
+        </Statement>
+        <Socials>
+          <a href="https://www.instagram.com/hufsglobal_likelion/" target="_blank" rel="noreferrer">
+            <BsInstagram /> 인스타그램
+          </a>
+          <a href="https://velog.io/@hufsglobal09/posts" target="_blank" rel="noreferrer">
+            <SiVelog /> 벨로그
+          </a>
+        </Socials>
+      </Closing>
+    </Page>
   );
 }

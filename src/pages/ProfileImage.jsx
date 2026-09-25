@@ -1,154 +1,39 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 import styled from "styled-components";
 import axiosInstance from "../axiosInstance";
-import PageContainer from "../components/PageContainer";
-import breakpoints from "../components/Breakpoints";
+import DefaultImage from "../image/Logo.png";
+import { Button, ErrorText, Muted, Page, PageHead, Panel, Stack } from "../components/ui";
+import { color } from "../theme";
 
-const ProfileImageContainer = styled.div`
-  display: flex;
-  width: 100%;
-  max-width: 85.5rem;
-  height: auto;
-  min-height: 47.56rem;
-  padding: 3.75rem 2.25rem;
-  flex-direction: column;
-  border-radius: 1.25rem;
-  box-sizing: border-box;
-  background: rgba(255, 255, 255, 0.19);
-  backdrop-filter: blur(10px);
-
-  @media (max-width: ${breakpoints.laptop}) {
-    max-width: 100%;
-    padding: 2.5rem 1.5rem;
-  }
-
-  @media (max-width: ${breakpoints.tablet}) {
-    width: 100%;
-    height: auto;
-    padding: 2rem 1.5rem;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    padding: 1.5rem 1rem;
-  }
-`;
-
-const Title = styled.h1`
-  color: #ffff;
-  font-family: Montserrat;
-  font-size: 4rem;
-  font-weight: 700;
-  margin-bottom: 3rem;
-  text-align: center;
-
-  @media (max-width: ${breakpoints.laptop}) {
-    font-size: 3rem;
-  }
-
-  @media (max-width: ${breakpoints.tablet}) {
-    font-size: 2.5rem;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: 2rem;
-  }
-`;
-
-const ImageUploadContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-  max-width: 40rem;
-  margin: 0 auto;
-  width: 100%;
-`;
-
-const ImagePreview = styled.div`
-  width: 20rem;
-  height: 20rem;
+const Avatar = styled.button`
+  align-self: center;
+  width: 12rem;
+  height: 12rem;
+  padding: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.19);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 2px dashed ${color.line};
+  background: ${color.raised};
   overflow: hidden;
-  position: relative;
-
-  @media (max-width: ${breakpoints.mobile}) {
-    width: 15rem;
-    height: 15rem;
-  }
-`;
-
-const PreviewImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
-const UploadButton = styled.button`
-  width: 13rem;
-  height: 3.25rem;
-  border-radius: 3.125rem;
-  border: none;
-  background: #ffff;
-  color: #ff7710;
-  font-family: Pretendard;
-  font-size: 1.25rem;
-  font-weight: 600;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 
   &:hover {
-    background: #ff7710;
-    color: #ffff;
+    border-color: ${color.brand};
   }
 
-  @media (max-width: ${breakpoints.mobile}) {
-    width: 10rem;
-    height: 2.75rem;
-    font-size: 1rem;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 `;
 
-const FileInput = styled.input`
-  display: none;
-`;
-
-const ErrorMessage = styled.p`
-  color: #ff4444;
-  font-family: Pretendard;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
-`;
-
-const ButtonContainer = styled.div`
+const Row = styled.div`
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 0.75rem;
 
-  @media (max-width: ${breakpoints.mobile}) {
-    flex-direction: column;
-    width: 100%;
-  }
-`;
-
-const SubmitButton = styled(UploadButton)`
-  background: #ff7710;
-  color: #ffff;
-
-  &:hover {
-    background: #ffff;
-    color: #ff7710;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    width: 100%;
+  & > * {
+    flex: 1;
   }
 `;
 
@@ -165,30 +50,24 @@ export default function ProfileImage() {
 
   const handleSubmit = async () => {
     if (!selectedFile) {
-      setError("이미지를 선택해주세요.");
+      setError("먼저 사진을 골라주세요.");
       return;
     }
 
     const formData = new FormData();
     formData.append("file", selectedFile);
-    console.log("전송할 FormData:", formData.get("image")); // 디버깅용 로그
 
     try {
-      const response = await axiosInstance.post(
-        "/user/uploadProfile",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("서버 응답:", response.data);
-      alert("프로필 이미지가 성공적으로 업로드되었습니다.");
+      await axiosInstance.post("/user/uploadProfile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      alert("프로필 사진을 바꿨습니다.");
       navigate("/mypage");
     } catch (error) {
-      setError("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
-      console.error("Error fetching profile image:", error);
+      setError("업로드하지 못했습니다. 잠시 후 다시 시도해주세요.");
+      console.error("Error uploading profile image:", error);
     }
   };
 
@@ -196,11 +75,11 @@ export default function ProfileImage() {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        setError("파일 크기는 5MB를 초과할 수 없습니다.");
+        setError("5MB 이하의 사진만 올릴 수 있습니다.");
         return;
       }
       if (!file.type.startsWith("image/")) {
-        setError("이미지 파일만 업로드 가능합니다.");
+        setError("이미지 파일만 올릴 수 있습니다.");
         return;
       }
       setSelectedFile(file);
@@ -209,52 +88,46 @@ export default function ProfileImage() {
     }
   };
 
-  const handleUpload = () => {
-    fileInputRef.current.click();
-  };
-
   const fetchMyProfile = async () => {
     try {
       const response = await axiosInstance.get("/user/profileImage", {
         responseType: "blob",
       });
-      const imageUrl = URL.createObjectURL(response.data);
-      setPreviewImage(imageUrl);
+      setPreviewImage(URL.createObjectURL(response.data));
     } catch (error) {
       console.error("Error fetching profile image:", error);
     }
   };
+
   return (
-    <>
-      <Header />
-      <PageContainer>
-        <ProfileImageContainer>
-          <Title>프로필 이미지 등록</Title>
-          <ImageUploadContainer>
-            <ImagePreview>
-              {previewImage ? (
-                <PreviewImage src={previewImage} alt="프로필 미리보기" />
-              ) : (
-                <PreviewImage src={previewImage} alt="기본 프로필" />
-              )}
-            </ImagePreview>
-            <FileInput
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileSelect}
-              accept="image/*"
-            />
-            <UploadButton onClick={handleUpload}>이미지 선택</UploadButton>
-            {error && <ErrorMessage>{error}</ErrorMessage>}
-            <ButtonContainer>
-              <SubmitButton onClick={handleSubmit}>업로드</SubmitButton>
-              <UploadButton onClick={() => navigate("/mypage")}>
-                취소
-              </UploadButton>
-            </ButtonContainer>
-          </ImageUploadContainer>
-        </ProfileImageContainer>
-      </PageContainer>
-    </>
+    <Page narrow>
+      <PageHead title="프로필 사진" />
+      <Panel>
+        <Stack>
+          <Avatar onClick={() => fileInputRef.current.click()} aria-label="사진 고르기">
+            <img src={previewImage || DefaultImage} alt="" />
+          </Avatar>
+          <Muted style={{ textAlign: "center" }}>
+            원을 눌러 사진을 고르세요. 5MB 이하 이미지.
+          </Muted>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            accept="image/*"
+            hidden
+          />
+          {error && <ErrorText role="alert">{error}</ErrorText>}
+          <Row>
+            <Button $variant="secondary" onClick={() => navigate("/mypage")}>
+              취소
+            </Button>
+            <Button onClick={handleSubmit} disabled={!selectedFile}>
+              저장하기
+            </Button>
+          </Row>
+        </Stack>
+      </Panel>
+    </Page>
   );
 }

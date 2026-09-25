@@ -1,200 +1,159 @@
-import Header from "../components/Header";
 import styled from "styled-components";
-import { IoIosArrowRoundForward } from "react-icons/io";
-import { ReactComponent as mainlogo } from "../svg/mainlogo.svg";
 import { useNavigate } from "react-router-dom";
-import breakpoints from "../components/Breakpoints";
-import PageContainer from "../components/PageContainer";
+import { ReactComponent as MainLogo } from "../svg/mainlogo.svg";
+import Header from "../components/Header";
+import { Button } from "../components/ui";
+import { useAuth } from "../AuthContext";
+import { bp, color, font, size } from "../theme";
 
-const TextContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 40vw;
-  max-width: 600px;
+const Hero = styled.main`
+  position: relative;
+  max-width: 72rem;
+  min-height: calc(100vh - 4.5rem);
+  margin: 0 auto;
+  padding: 4rem 3rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 3rem;
+  overflow: hidden;
 
-  @media (max-width: ${breakpoints.laptop}) {
-    width: 80%;
-    align-items: center;
-  }
-
-  @media (max-width: ${breakpoints.tablet}) {
-    width: 90%;
+  @media (max-width: ${bp.laptop}) {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 2.5rem 1rem 4rem;
   }
 `;
 
-const TitleText = styled.h1`
-  font-family: Montserrat;
-  font-size: 6rem;
-  font-weight: 700;
-  line-height: 140%;
-  color: #fff;
+const Kicker = styled.p`
+  color: ${color.muted};
+  font-size: ${size.lg};
+  font-weight: 600;
   margin-bottom: 1.5rem;
 
-  @media (max-width: ${breakpoints.laptop}) {
-    font-size: 4rem;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: 3rem;
+  @media (max-width: ${bp.tablet}) {
+    font-size: ${size.md};
   }
 `;
 
-const MiddleContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  @media (max-width: ${breakpoints.laptop}) {
-    width: 80%;
-    align-items: center;
+// 앱에서 가장 크게 쓰는 요소. 다른 페이지는 이 크기를 쓰지 않는다.
+const Slogan = styled.h1`
+  font-family: ${font.display};
+  font-weight: 800;
+  font-size: ${size.hero};
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+
+  span {
+    display: block;
+    white-space: nowrap;
+  }
+  .arrow {
+    color: ${color.brand};
+    margin-right: 0.12em;
   }
 `;
 
-const MiddleText = styled.h1`
-  font-family: Pretendard;
-  font-size: 2.25rem;
+const Welcome = styled.p`
+  margin-top: 2rem;
+  max-width: 28rem;
+  font-size: ${size.xl};
   font-weight: 600;
-  line-height: 140%;
-  color: #fff;
-  margin: 0;
+  line-height: 1.45;
 
-  @media (max-width: ${breakpoints.laptop}) {
-    font-size: 1.75rem;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: 1.5rem;
+  @media (max-width: ${bp.tablet}) {
+    font-size: ${size.lg};
   }
 `;
 
-const IntroButton = styled.div`
-  width: 14rem;
-  height: 3.5rem;
+const Actions = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-wrap: wrap;
   gap: 0.75rem;
-  border: 1.5px solid #fff;
-  cursor: pointer;
-  transition: 0.3s;
-
-  &:hover {
-    background: #ff7710;
-    border-color: #ff7710;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    width: 12rem;
-    height: 3rem;
-  }
+  margin-top: 2.5rem;
 `;
 
-const ButtonText = styled.h1`
-  font-family: Pretendard;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #fff;
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: 1.25rem;
-  }
-`;
-
-const Arrow = styled(IoIosArrowRoundForward)`
-  width: 1.5rem;
-  height: 1.5rem;
-  color: #fff;
-`;
-
-const CircleContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
+// 로고 뒤 주황 고리는 사자 갈기를 옮긴 것
+const Mark = styled.div`
   position: relative;
-  width: min(45vw, 670px);
-  height: min(45vw, 670px);
-  aspect-ratio: 1 / 1;
+  justify-self: center;
+  width: min(100%, 26rem);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
 
-  @media (max-width: ${breakpoints.laptop}) {
-    width: min(50vw, 500px);
-    height: min(50vw, 500px);
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 200deg,
+      ${color.brand},
+      rgba(255, 119, 16, 0) 55%,
+      ${color.brand}
+    );
+    -webkit-mask: radial-gradient(circle, transparent 62%, #000 63%);
+    mask: radial-gradient(circle, transparent 62%, #000 63%);
   }
 
-  @media (max-width: ${breakpoints.tablet}) {
-    width: min(60vw, 400px);
-    height: min(60vw, 400px);
+  /* 로고는 남색 도장이라 어두운 바탕에서 묻힌다. 밝은 원판 위에 올린다. */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 13%;
+    border-radius: 50%;
+    background: ${color.text};
   }
 
-  @media (max-width: ${breakpoints.mobile}) {
-    width: min(75vw, 300px);
-    height: min(75vw, 300px);
+  svg {
+    position: relative;
+    z-index: 1;
+    width: 64%;
+    height: auto;
   }
-`;
 
-const Circle = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  opacity: 0.7;
-  background: linear-gradient(
-    rgba(254, 88, 38, 0.75) 0%,
-    rgba(0, 0, 0, 0) 47.5%,
-    #200801 100%
-  );
-  transform: rotate(-75deg);
-`;
-
-const MainLogo = styled(mainlogo)`
-  width: 80%;
-  height: auto;
-  position: absolute;
-`;
-
-const TextOverlay = styled.h1`
-  position: absolute;
-  color: white;
-  font-family: Montserrat;
-  font-weight: 700;
-  line-height: 140%;
-  letter-spacing: -2.4%;
-  font-size: clamp(2rem, 5vw, 6rem);
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: clamp(1.5rem, 4vw, 2.5rem);
+  @media (max-width: ${bp.laptop}) {
+    grid-row: 1;
+    width: min(60vw, 14rem);
+    justify-self: start;
   }
 `;
 
 export default function Main() {
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
   return (
     <>
       <Header />
-      <PageContainer>
-        <TextContainer>
-          <TitleText>WELCOME</TitleText>
-          <MiddleContainer>
-            <MiddleText>
-              한국외대 글로벌캠퍼스
-              <br />
-              멋쟁이사자처럼입니다.
-            </MiddleText>
-            <MiddleText>13기 아기사자 여러분, 환영합니다!</MiddleText>
-            <IntroButton onClick={() => navigate("/introduce")}>
-              <ButtonText>멋사 알아보기</ButtonText>
-              <Arrow />
-            </IntroButton>
-          </MiddleContainer>
-        </TextContainer>
-        <CircleContainer>
-          <Circle />
+      <Hero>
+        <div>
+          <Kicker>한국외대 글로벌캠퍼스 멋쟁이사자처럼 13기</Kicker>
+          <Slogan aria-label="Growl to world">
+            <span>GROWL-TO</span>
+            <span>
+              <span className="arrow" style={{ display: "inline" }}>
+                →
+              </span>
+              WORLD
+            </span>
+          </Slogan>
+          <Welcome>13기 아기사자 여러분, 환영합니다.</Welcome>
+          <Actions>
+            <Button onClick={() => navigate("/introduce")}>멋사 알아보기</Button>
+            <Button
+              $variant="secondary"
+              onClick={() => navigate(isLoggedIn ? "/check" : "/login")}
+            >
+              {isLoggedIn ? "출석하러 가기" : "로그인"}
+            </Button>
+          </Actions>
+        </div>
+        <Mark aria-hidden="true">
           <MainLogo />
-          <TextOverlay>
-            GROWL-TO
-            <br />→ WORLD
-          </TextOverlay>
-        </CircleContainer>
-      </PageContainer>
+        </Mark>
+      </Hero>
     </>
   );
 }

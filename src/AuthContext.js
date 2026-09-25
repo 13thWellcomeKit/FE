@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { Cookies } from "react-cookie";
+import axiosInstance from "./axiosInstance";
 
 // Context 생성
 const AuthContext = createContext();
@@ -9,6 +10,8 @@ export function AuthProvider({ children }) {
   const cookies = new Cookies();
   const [isLoggedIn, setIsLoggedIn] = useState(!!cookies.get("accessToken"));
   const [token, setToken] = useState(cookies.get("accessToken") || ""); // 쿠키에서 accessToken 가져옴
+  // undefined: 아직 조회 중, null: 비로그인 또는 조회 실패, "ADMIN" | "BABY_LION"
+  const [userType, setUserType] = useState(undefined);
 
   useEffect(() => {
     setIsLoggedIn(!!token);
@@ -22,9 +25,26 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  // 운영진 메뉴 노출용. 권한 검사 자체는 서버가 한다.
+  useEffect(() => {
+    if (!token) {
+      setUserType(null);
+      return;
+    }
+    let cancelled = false;
+    setUserType(undefined);
+    axiosInstance
+      .get("/user/info")
+      .then((res) => !cancelled && setUserType(res.data?.userType ?? null))
+      .catch(() => !cancelled && setUserType(null));
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
   const saveToken = (newToken) => {
-    setToken(newToken);
     cookies.set("accessToken", newToken, { path: "/", sameSite: "Lax" }); // ✅ sameSite 추가
+    setToken(newToken);
     setIsLoggedIn(true);
   };
 
@@ -36,7 +56,16 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ token, isLoggedIn, saveToken, logout }}>
+    <AuthContext.Provider
+      value={{
+        token,
+        isLoggedIn,
+        userType,
+        isAdmin: userType === "ADMIN",
+        saveToken,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

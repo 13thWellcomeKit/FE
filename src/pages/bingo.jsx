@@ -1,217 +1,143 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import Header from "../components/Header";
 import bingoImage from "../svg/bingo.svg";
-import { BsExclamationTriangle } from "react-icons/bs";
 import axiosInstance from "../axiosInstance";
-import breakpoints from "../components/Breakpoints";
-import PageContainer from "../components/PageContainer";
+import { Muted, Page, PageHead, Panel } from "../components/ui";
+import { bp, color, radius, size } from "../theme";
 
-const BingoTextContainer = styled.div`
-  max-width: 37.5rem;
-`;
-
-const BingoTitle = styled.h1`
-  color: white;
-  margin: 0.625rem 0;
-  font-size: 6rem;
-  font-weight: bold;
-  white-space: nowrap;
-
-  @media (max-width: ${breakpoints.laptop}) {
-    font-size: 4rem;
-  }
-
-  @media (max-width: ${breakpoints.tablet}) {
-    font-size: 3rem;
-  }
-`;
-
-const BingoDescription = styled.p`
-  font-family: Pretendard;
-  font-weight: medium;
-  color: white;
-  font-size: 1.5rem;
-  margin: 0.625rem 0;
-  margin-top: 2.5rem;
-  font-weight: 500;
-`;
-
-const BingoCaution = styled.h2`
-  color: #ff7710;
-  margin: 0.625rem 0;
-  margin-top: 2.5rem;
-  font-size: 2rem;
-  display: flex;
-  align-items: center;
-`;
-
-const CautionIcon = styled(BsExclamationTriangle)`
-  margin-right: 0.5rem;
-  font-size: 2rem;
-`;
-
-const BingoFooter = styled.p`
-  color: white;
-  margin: 0.625rem 0;
-  margin-top: 1rem;
-  font-size: 1.25rem;
-  font-family: Pretendard;
-  font-weight: lighter;
-`;
-
-const BingoCardContainer = styled.div`
+const Layout = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 19rem);
+  gap: 1.5rem;
+  align-items: start;
 
-  @media (max-width: ${breakpoints.mobile}) {
-    gap: 0.25rem;
+  @media (max-width: ${bp.laptop}) {
+    grid-template-columns: 1fr;
   }
 `;
 
-const BingoCard = styled.div`
-  width: 10.625rem;
-  height: 9.875rem;
-  cursor: pointer;
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(${(p) => p.$cols}, minmax(0, 1fr));
+  gap: 0.5rem;
+  max-width: 40rem;
+`;
+
+const Cell = styled.button`
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f0f0f0;
+  aspect-ratio: 1;
+  padding: 0;
+  border: none;
+  background: none;
+  perspective: 800px;
+  cursor: ${(p) => (p.$revealed ? "default" : "pointer")};
+`;
+
+const Flip = styled.div`
+  position: absolute;
+  inset: 0;
   transform-style: preserve-3d;
-  perspective: 1000px;
-  transition: transform 5s ease-in-out;
-
-  ${({ flipped }) =>
-    flipped &&
-    `
-        transform: rotateY(540deg);
-    `}
-
-  @media (max-width: ${breakpoints.laptop}) {
-    width: 9rem;
-    height: 8.5rem;
-  }
-
-  @media (max-width: ${breakpoints.tablet}) {
-    width: 7.5rem;
-    height: 7rem;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    width: 6rem;
-    height: 5.5rem;
-  }
+  transition: transform 0.6s ease;
+  transform: ${(p) => (p.$revealed ? "rotateY(180deg)" : "none")};
 `;
 
-const BingoImage = styled.img`
-  width: 100%;
-  height: 100%;
+const Face = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
+  border-radius: ${radius.control};
   backface-visibility: hidden;
-  object-fit: cover;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
 `;
 
-const CardContent = styled.div`
-  width: 100%;
-  height: 100%;
+const Back = styled(Face)`
+  background: ${color.raised};
+  border: 1px solid ${color.line};
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  ${Cell}:hover:not(:disabled) & {
+    border-color: ${color.brand};
+  }
+`;
+
+const Front = styled(Face)`
+  transform: rotateY(180deg);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #fff;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: rotateY(540deg);
-  backface-visibility: hidden;
-  font-size: 1.25rem;
-  font-weight: bold;
-  outline: 1px solid #9d9d9d;
-  outline-offset: -1px;
+  gap: 0.4rem;
   padding: 0.5rem;
   text-align: center;
-  box-sizing: border-box;
+  font-size: ${size.sm};
+  font-weight: 700;
+  line-height: 1.35;
+  background: ${(p) => (p.$complete ? color.brand : color.surface)};
+  color: ${(p) => (p.$complete ? color.ink : color.text)};
+  border: 1.5px ${(p) => (p.$complete ? "solid" : "dashed")}
+    ${(p) => (p.$complete ? color.brand : color.muted)};
 
-  @media (max-width: ${breakpoints.tablet}) {
-    font-size: 1rem;
-  }
-
-  @media (max-width: ${breakpoints.mobile}) {
-    font-size: 0.75rem;
+  @media (max-width: ${bp.mobile}) {
+    font-size: 0.72rem;
   }
 `;
 
-const BingoContent = styled.div`
+const Badge = styled.span`
+  padding: 0.1rem 0.5rem;
+  border-radius: ${radius.pill};
+  background: ${color.raised};
+  color: ${color.muted};
+  font-size: 0.7rem;
+  font-weight: 600;
+`;
+
+const Rules = styled.ol`
+  margin: 0;
+  padding-left: 1.2rem;
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 3rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  color: ${color.muted};
 
-  @media (max-width: ${breakpoints.desktop}) {
-    flex-direction: column;
-    gap: 2rem;
+  strong {
+    color: ${color.text};
   }
 `;
 
-const BingoText = () => (
-  <BingoTextContainer>
-    <BingoTitle>Let's Bingo</BingoTitle>
-    <BingoDescription>
-      여러분들의 팀과 함께 빙고를 채워보세요.
-      <br />
-      가장 먼저 빙고를 채운 팀에게는
-      <br />
-      굉장한 어메이징한 상품이 제공됩니다:)
-    </BingoDescription>
-    <BingoCaution>
-      <CautionIcon /> CAUTION!
-    </BingoCaution>
-    <BingoFooter>
-      빙고를 돌릴 수 있는 권한은 각 팀의 운영진에게만 있습니다.
-      <br />
-      팀원들과 잘 상의 후 결정해주시기 바랍니다.
-    </BingoFooter>
-  </BingoTextContainer>
-);
+const Legend = styled.ul`
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 1.25rem 0 0;
+  border-top: 1px solid ${color.line};
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: ${size.sm};
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  i {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 4px;
+    display: inline-block;
+  }
+`;
 
 export default function Bingo() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [missions, setMissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCell, setSelectedCell] = useState(null);
-
-  const BingoCardComponent = ({
-    image,
-    content,
-    isRevealed,
-    index,
-    onClick,
-  }) => (
-    <BingoCard onClick={() => onClick(index)} flipped={isRevealed}>
-      <BingoImage src={image} alt={`Bingo ${content}`} />
-      <CardContent>{content}</CardContent>
-    </BingoCard>
-  );
-
-  const BingoBoard = ({ images, missions, handleCardClick }) => (
-    <BingoCardContainer>
-      {images.map((image, index) => (
-        <BingoCardComponent
-          key={image.id}
-          image={image.src}
-          content={image.content}
-          isRevealed={missions[index]?.isRevealed}
-          index={index}
-          onClick={handleCardClick}
-        />
-      ))}
-    </BingoCardContainer>
-  );
+  // 열렸지만 승인 전인 칸이 있으면 새 칸을 열 수 없다(서버 규칙과 같음).
+  const pending = missions.some((m) => m.isRevealed && !m.isComplete);
 
   useEffect(() => {
     const fetchBingoData = async () => {
@@ -239,12 +165,12 @@ export default function Bingo() {
 
   const handleCardClick = async (index) => {
     if (isProcessing) {
-      alert("이전 빙고 승인이 완료될 때까지 기다려주세요.");
+      alert("처리 중입니다. 잠시만 기다려주세요.");
       return;
     }
 
-    if (selectedCell !== null) {
-      alert("이미 선택된 미션이 있습니다. 관리자 승인을 기다려주세요.");
+    if (pending) {
+      alert("열린 미션이 승인되면 다음 칸을 열 수 있습니다.");
       return;
     }
 
@@ -281,37 +207,86 @@ export default function Bingo() {
       }
     } catch (error) {
       console.error("빙고 승인이 실패했습니다:", error);
-      alert("이미 선택된 미션이 있습니다. 관리자 승인을 기다려주세요.");
+      alert("칸을 열지 못했습니다. 승인 대기 중인 미션이 없는지 확인해주세요.");
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const images = missions.map((mission, index) => ({
-    id: index + 1,
-    src: bingoImage,
-    content: mission.content || `${mission.mission}`,
-  }));
+  const cols = Math.max(3, Math.round(Math.sqrt(missions.length)) || 3);
 
   return (
-    <>
-      <Header />
-      <PageContainer>
-        <BingoContent>
-          <BingoText />
+    <Page>
+      <PageHead
+        title="Let's Bingo"
+        display
+        description="팀원과 미션을 하나씩 열고 완료해서 빙고를 만드세요. 가장 먼저 빙고를 완성한 팀에게 상품이 있습니다."
+      />
+      <Layout>
+        <div>
           {loading ? (
-            <div>로딩 중...</div>
+            <Muted>빙고판을 불러오는 중…</Muted>
           ) : error ? (
-            <div>미션 데이터를 불러오는 중 오류가 발생했습니다.</div>
+            <Muted>빙고판을 불러오지 못했습니다. 팀 배정이 끝났는지 운영진에게 확인해주세요.</Muted>
+          ) : missions.length === 0 ? (
+            <Muted>아직 빙고판이 없습니다. 팀이 배정되면 여기에 빙고판이 생깁니다.</Muted>
           ) : (
-            <BingoBoard
-              images={images}
-              missions={missions}
-              handleCardClick={handleCardClick}
-            />
+            <Grid $cols={cols}>
+              {missions.map((mission, index) => {
+                const revealed = !!mission.isRevealed;
+                const text = mission.content || mission.mission;
+                return (
+                  <Cell
+                    key={mission.id ?? index}
+                    $revealed={revealed}
+                    disabled={revealed || isProcessing}
+                    onClick={() => handleCardClick(index)}
+                    aria-label={
+                      revealed
+                        ? `${text}, ${mission.isComplete ? "완료" : "승인 대기"}`
+                        : `${index + 1}번 칸 열기`
+                    }
+                  >
+                    <Flip $revealed={revealed}>
+                      <Back>
+                        <img src={bingoImage} alt="" />
+                      </Back>
+                      <Front $complete={mission.isComplete}>
+                        {text}
+                        {revealed && !mission.isComplete && <Badge>승인 대기</Badge>}
+                      </Front>
+                    </Flip>
+                  </Cell>
+                );
+              })}
+            </Grid>
           )}
-        </BingoContent>
-      </PageContainer>
-    </>
+        </div>
+
+        <Panel>
+          <Rules>
+            <li>
+              칸은 <strong>각 팀 운영진</strong>이 엽니다. 팀원과 상의해서 고르세요.
+            </li>
+            <li>한 번에 한 칸만 열립니다. 미션을 끝내면 운영진이 승인합니다.</li>
+            <li>승인되면 칸이 채워지고 다음 칸을 열 수 있어요.</li>
+          </Rules>
+          <Legend>
+            <li>
+              <i style={{ background: color.raised, border: `1px solid ${color.line}` }} />
+              아직 안 연 칸
+            </li>
+            <li>
+              <i style={{ border: `1.5px dashed ${color.muted}` }} />
+              승인 대기
+            </li>
+            <li>
+              <i style={{ background: color.brand }} />
+              완료
+            </li>
+          </Legend>
+        </Panel>
+      </Layout>
+    </Page>
   );
 }
