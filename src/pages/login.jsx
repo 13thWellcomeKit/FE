@@ -1,7 +1,7 @@
 import Header from "../components/Header";
 import styled from "styled-components";
 import { ReactComponent as mainlogo } from "../svg/mainlogo.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../AuthContext";
 import axiosInstance from "../axiosInstance";
@@ -240,6 +240,14 @@ export default function Login() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // QR을 기본 카메라로 찍고 비로그인 상태로 들어온 경우 로그인 후 /check?token= 으로 돌려보낸다.
+  // 외부 주소로 튕기지 않도록 같은 사이트 경로만 허용.
+  const redirect = searchParams.get("redirect");
+  const afterLogin =
+    redirect && redirect.startsWith("/") && !redirect.startsWith("//")
+      ? redirect
+      : "/";
 
   const GotoSignup = () => {
     navigate("/signup");
@@ -258,7 +266,7 @@ export default function Login() {
 
       console.log("로그인 성공:", response.data);
       alert("로그인 성공!");
-      navigate("/");
+      navigate(afterLogin);
     } catch (error) {
       console.error("로그인 실패:", error.response?.data || error.message);
       alert("로그인에 실패했습니다.");

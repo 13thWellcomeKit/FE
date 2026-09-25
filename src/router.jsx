@@ -10,6 +10,7 @@ import SignUp from "./pages/sign";
 import QRCodeScanner from "./pages/qrscanner";
 import ChangePassword from "./pages/ChangePassword";
 import ProfileImage from "./pages/ProfileImage";
+import AdminAttendance from "./pages/AdminAttendance";
 
 const RouterComponent = () => {
   return (
@@ -27,6 +28,7 @@ const RouterComponent = () => {
         <Route path="/qrcodescanner" element={<QRCodeScanner />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/change-profile" element={<ProfileImage />} />
+        <Route path="/admin/attendance" element={<AdminAttendance />} />
       </Routes>
     </BrowserRouter>
   );

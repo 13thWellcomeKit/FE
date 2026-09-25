@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactQRScanner from "react-qr-scanner";
 import axiosInstance from "../axiosInstance";
+import { errorMessage, extractQrToken } from "../attendance";
 
 const QRScanner = () => {
   const [result, setResult] = useState(null);
@@ -25,14 +26,14 @@ const QRScanner = () => {
   const sendQRDataToServer = async (qrData) => {
     try {
       const response = await axiosInstance.post("/attendance/success", {
-        qrData,
+        token: extractQrToken(qrData),
       });
 
-      setMessage(`서버 응답: ${response.data.message}`);
+      setMessage(`서버 응답: ${response.data?.message ?? response.data}`);
       console.log(message);
     } catch (error) {
       console.error("서버 요청 실패:", error);
-      setMessage("서버 요청 실패");
+      setMessage(errorMessage(error, "서버 요청 실패"));
       console.log(message);
     }
   };
@@ -47,6 +48,7 @@ const QRScanner = () => {
         onScan={handleScan}
       />
       <div>{result && <p>Scanned result: {result}</p>}</div>
+      <div>{message && <p>{message}</p>}</div>
     </div>
   );
 };

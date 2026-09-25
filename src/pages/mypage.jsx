@@ -6,6 +6,12 @@ import axiosInstance from "../axiosInstance";
 import Image from "../image/Logo.png";
 import PageContainer from "../components/PageContainer";
 import breakpoints from "../components/Breakpoints";
+import {
+  ATTENDANCE_STATUS,
+  STATUS_ORDER,
+  formatDate,
+  formatTime,
+} from "../attendance";
 
 const MypageContainer = styled.div`
   display: flex;
@@ -231,6 +237,65 @@ const MypageBox = styled.div`
   }
 `;
 
+const AttendanceSection = styled.section`
+  margin-top: 2.5rem;
+  font-family: Pretendard;
+  color: #ffffff;
+`;
+
+const SectionTitle = styled.h2`
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+`;
+
+const SummaryRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+`;
+
+const AttendanceList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const AttendanceItem = styled.li`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.08);
+`;
+
+const StatusBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+
+  &::before {
+    content: "";
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: ${(props) => props.$color};
+  }
+`;
+
+const MutedText = styled.span`
+  color: #9d9d9d;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+`;
+
 export default function MyPage() {
   const navigate = useNavigate();
   const [userdata, setUserdata] = useState({});
@@ -238,12 +303,30 @@ export default function MyPage() {
   const [manito, setManito] = useState(null);
   const [manitoMessage, setManitoMessage] = useState("");
   const [manitoError, setManitoError] = useState("");
+  const [attendance, setAttendance] = useState(null);
+  const [attendanceError, setAttendanceError] = useState("");
 
   useEffect(() => {
     fetchMyData();
     fetchMyProfile();
     fetchMyManito();
+    fetchMyAttendance();
   }, []);
+
+  const fetchMyAttendance = async () => {
+    try {
+      const res = await axiosInstance.get("/attendance/my-attendance");
+      // 서버는 attendanceTime 순으로 줘서 결석(시각 null)이 섞인다. 날짜 최신순으로 다시 정렬.
+      const sorted = [...(res.data || [])].sort((a, b) =>
+        String(b.date).localeCompare(String(a.date))
+      );
+      setAttendance(sorted);
+      setAttendanceError("");
+    } catch (err) {
+      console.error("Error fetching attendance:", err);
+      setAttendanceError("출석 기록을 불러오지 못했습니다.");
+    }
+  };
 
   const fetchMyData = async () => {
     try {
@@ -318,6 +401,52 @@ export default function MyPage() {
               </MypageBox>
             </TextBody>
           </MypageBody>
+          <AttendanceSection>
+            <SectionTitle>내 출석</SectionTitle>
+            {attendanceError && <MutedText>{attendanceError}</MutedText>}
+            {attendance && (
+              <>
+                <SummaryRow>
+                  {STATUS_ORDER.map((status) => (
+                    <StatusBadge
+                      key={status}
+                      $color={ATTENDANCE_STATUS[status].color}
+                    >
+                      {ATTENDANCE_STATUS[status].label}{" "}
+                      {
+                        attendance.filter((a) => a.attendanceStatus === status)
+                          .length
+                      }
+                    </StatusBadge>
+                  ))}
+                </SummaryRow>
+                {attendance.length === 0 ? (
+                  <MutedText>아직 출석 기록이 없습니다.</MutedText>
+                ) : (
+                  <AttendanceList>
+                    {attendance.map((a, i) => (
+                      <AttendanceItem key={`${a.date}-${i}`}>
+                        <span>{formatDate(a.date)}</span>
+                        <span>
+                          <StatusBadge
+                            $color={
+                              ATTENDANCE_STATUS[a.attendanceStatus]?.color
+                            }
+                          >
+                            {ATTENDANCE_STATUS[a.attendanceStatus]?.label ??
+                              "-"}
+                          </StatusBadge>
+                          {formatTime(a.attendanceTime) && (
+                            <MutedText>{formatTime(a.attendanceTime)}</MutedText>
+                          )}
+                        </span>
+                      </AttendanceItem>
+                    ))}
+                  </AttendanceList>
+                )}
+              </>
+            )}
+          </AttendanceSection>
         </MypageContainer>
       </PageContainer>
     </>

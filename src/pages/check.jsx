@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import ReactQRScanner from "react-qr-scanner";
 import Header from "../components/Header";
 import CheckBoard from "../components/Board";
@@ -8,6 +9,8 @@ import axiosInstance from "../axiosInstance";
 import media from "styled-media-query";
 import PageContainer from "../components/PageContainer";
 import breakpoints from "../components/Breakpoints";
+import { useAuth } from "../AuthContext";
+import { errorMessage, extractQrToken } from "../attendance";
 
 const TextContainer = styled.div`
   display: flex;
@@ -162,6 +165,31 @@ const ScannerContainer = styled.div`
   margin: 1rem 0;
 `;
 
+const QrStatus = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  font-family: Pretendard;
+  font-size: 1.125rem;
+  color: ${(props) => (props.$expired ? "#d03b3b" : "#1c1b1a")};
+`;
+
+const RegenerateButton = styled.button`
+  padding: 0.5rem 1.25rem;
+  border-radius: 3.125rem;
+  border: none;
+  background-color: #ff7710;
+  color: #ffffff;
+  font-family: Pretendard;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+`;
+
+const formatRemaining = (seconds) =>
+  `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+
 const MessageBox = styled.div`
   margin-top: 1rem;
   padding: 0.75rem;
@@ -190,6 +218,42 @@ export default function Check() {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState(null);
   const [boarddata, setBoarddata] = useState(null);
+  // 서버가 X-QR-Valid-Seconds로 알려준 만료 시각(로컬 시계 기준). 헤더가 없으면(구버전 BE) null.
+  const [qrDeadline, setQrDeadline] = useState(null);
+  const [remaining, setRemaining] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+  const autoSubmitted = useRef(false);
+
+  // 폰 기본 카메라로 QR을 찍으면 /check?token=... 으로 바로 들어온다.
+  const tokenParam = searchParams.get("token");
+  useEffect(() => {
+    if (!tokenParam || autoSubmitted.current) return;
+    autoSubmitted.current = true;
+    if (!isLoggedIn) {
+      const back = `/check?token=${encodeURIComponent(tokenParam)}`;
+      navigate(`/login?redirect=${encodeURIComponent(back)}`, {
+        replace: true,
+      });
+      return;
+    }
+    // 새로고침 시 다시 제출되지 않도록 주소에서 토큰을 지운다.
+    setSearchParams({}, { replace: true });
+    submitToken(tokenParam);
+  }, [tokenParam, isLoggedIn]);
+
+  useEffect(() => {
+    if (!qrDeadline) {
+      setRemaining(null);
+      return;
+    }
+    const tick = () =>
+      setRemaining(Math.max(0, Math.ceil((qrDeadline - Date.now()) / 1000)));
+    tick();
+    const timer = setInterval(tick, 1000);
+    return () => clearInterval(timer);
+  }, [qrDeadline]);
 
   useEffect(() => {
     if (modalType === "qr") {
@@ -209,7 +273,16 @@ export default function Check() {
         responseType: "blob",
       });
       const imageUrl = URL.createObjectURL(response.data);
-      setQrImage(imageUrl);
+      setQrImage((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return imageUrl;
+      });
+      const validSeconds = Number(response.headers["x-qr-valid-seconds"]);
+      setQrDeadline(
+        Number.isFinite(validSeconds) && response.headers["x-qr-valid-seconds"]
+          ? Date.now() + validSeconds * 1000
+          : null
+      );
     } catch (error) {
       console.error("Error fetching QR code:", error);
       setMessage("QR 코드를 불러오는데 실패했습니다.");
@@ -218,26 +291,33 @@ export default function Check() {
   };
 
   const sendQRDataToServer = async (qrData) => {
-    try {
-      const response = await axiosInstance.post("/attendance/success", {
-        qrData,
-      });
-
-      setMessage(`출석 성공: ${response.data.message}`);
-      setMessageType("success");
-
+    const ok = await submitToken(extractQrToken(qrData));
+    if (ok) {
       setTimeout(() => {
         setScanResult(null);
         setTimeout(() => {
           closeModal();
         }, 2000);
       }, 1000);
+    }
+  };
+
+  const submitToken = async (token) => {
+    try {
+      const response = await axiosInstance.post("/attendance/success", {
+        token,
+      });
+      // 응답 본문은 문자열("OOO님, 출석 완료")
+      setMessage(`출석 결과: ${response.data?.message ?? response.data}`);
+      setMessageType("success");
+      return true;
     } catch (error) {
       console.error("서버 요청 실패:", error);
       setMessage(
-        "출석 처리 실패: " + (error.response?.data?.message || error.message)
+        "출석 처리 실패: " + errorMessage(error, error.message)
       );
       setMessageType("error");
+      return false;
     }
   };
 
@@ -268,7 +348,9 @@ export default function Check() {
 
   const closeModal = () => {
     setModalType(null);
+    if (qrImage) URL.revokeObjectURL(qrImage);
     setQrImage(null);
+    setQrDeadline(null);
     setScanResult(null);
     setMessage(null);
   };
@@ -300,7 +382,7 @@ export default function Check() {
           {message && <MessageBox type={messageType}>{message}</MessageBox>}
         </TextContainer>
         {boarddata && boarddata.length > 0 ? (
-          <CheckBoard memberdata={boarddata} />
+          <CheckBoard memberdata={boarddata} onUpdated={fetchBoarddata} />
         ) : null}
       </PageContainer>
 
@@ -316,10 +398,26 @@ export default function Check() {
                   <img
                     src={qrImage}
                     alt="QR Code"
-                    style={{ width: "95%", height: "auto" }}
+                    style={{
+                      width: "95%",
+                      height: "auto",
+                      opacity: remaining === 0 ? 0.2 : 1,
+                    }}
                   />
                 ) : (
                   <p>Loading...</p>
+                )}
+                {remaining !== null && (
+                  <QrStatus $expired={remaining === 0}>
+                    {remaining === 0
+                      ? "QR이 만료되었습니다."
+                      : `남은 유효 시간 ${formatRemaining(remaining)}`}
+                    {remaining === 0 && (
+                      <RegenerateButton onClick={fetchQrCode}>
+                        QR 재생성
+                      </RegenerateButton>
+                    )}
+                  </QrStatus>
                 )}
               </>
             )}

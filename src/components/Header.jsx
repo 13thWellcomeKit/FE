@@ -120,7 +120,7 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, isAdmin, logout } = useAuth();
 
   const handleNavigate = (path) => {
     navigate(path);
@@ -164,6 +164,14 @@ export default function Header() {
           >
             BINGO
           </HeaderText>
+          {isAdmin && (
+            <HeaderText
+              active={location.pathname === "/admin/attendance"}
+              onClick={() => handleNavigate("/admin/attendance")}
+            >
+              ADMIN
+            </HeaderText>
+          )}
         </MenuContainer>
         <LoginContainer>
           {isLoggedIn ? (
@@ -210,6 +218,11 @@ export default function Header() {
             <HeaderText onClick={() => handleNavigate("/bingo")}>
               Let's BINGO
             </HeaderText>
+            {isAdmin && (
+              <HeaderText onClick={() => handleNavigate("/admin/attendance")}>
+                출석 통계
+              </HeaderText>
+            )}
           </MenuModal>
         </ModalOverlay>
       )}
