@@ -183,7 +183,7 @@ export default function Bingo() {
   const [missions, setMissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCell, setSelectedCell] = useState(null);
+  const [selectedCell] = useState(null);
 
   const BingoCardComponent = ({
     image,

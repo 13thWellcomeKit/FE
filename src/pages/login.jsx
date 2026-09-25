@@ -237,7 +237,7 @@ export default function Login() {
   const { saveToken } = useAuth();
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error] = useState("");
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

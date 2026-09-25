@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import ReactQRScanner from "react-qr-scanner";
 import axiosInstance from "../axiosInstance";
 import { errorMessage, extractQrToken } from "../attendance";
@@ -7,9 +7,12 @@ const QRScanner = () => {
   const [result, setResult] = useState(null);
   const [message, setMessage] = useState(null);
 
+  const handled = useRef(false);
   const handleScan = (data) => {
-    if (data) {
+    if (data && !handled.current) {
+      handled.current = true;
       setResult(data.text);
+      sendQRDataToServer(data.text);
     }
   };
 
@@ -17,11 +20,6 @@ const QRScanner = () => {
     console.error(err);
   };
 
-  useEffect(() => {
-    if (result) {
-      sendQRDataToServer(result);
-    }
-  }, [result]);
 
   const sendQRDataToServer = async (qrData) => {
     try {
