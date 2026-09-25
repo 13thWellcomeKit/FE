@@ -16,6 +16,8 @@ const BoardContainer = styled.div`
   display: flex;
   flex-direction: column;
   background-color: white;
+  /* 흰 판 위라 글자색을 직접 준다. 없으면 어두운 페이지의 흰 글자색을 물려받아 표 칸(RowBox)이 안 보였다 */
+  color: #1c1b1a;
   overflow-y: auto;
   ::-webkit-scrollbar {
     width: 0px;
@@ -196,6 +198,7 @@ const Dialog = styled.div`
   padding: 1.75rem 1.5rem;
   border-radius: 1rem;
   background: #ffffff;
+  color: #1c1b1a; /* 제목(DialogTitle)이 흰 글자색을 물려받아 안 보였다 */
   font-family: Pretendard;
   display: flex;
   flex-direction: column;
