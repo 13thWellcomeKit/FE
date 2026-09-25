@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import Header from "../components/Header";
 import CheckBoard from "../components/Board";
 import axiosInstance from "../axiosInstance";
-import breakpoints from "../components/Breakpoints";
+import { Button, Muted, Page, PageHead, Panel, StatusDot } from "../components/ui";
+import { color, radius, size, bp } from "../theme";
 import { useAuth } from "../AuthContext";
 import {
   ATTENDANCE_STATUS,
@@ -15,75 +15,26 @@ import {
 // 이 횟수 이상 결석하면 표에서 강조한다. 수료 기준이 정해지면 맞춰 바꿀 것.
 const ABSENT_WARNING = 3;
 
-const Page = styled.div`
-  min-height: 100vh;
-  background: #1c1b1a;
-  color: #ffffff;
-  font-family: Pretendard;
-  padding: 2.25rem 3.44rem;
-  box-sizing: border-box;
-
-  @media (max-width: ${breakpoints.tablet}) {
-    padding: 1.5rem 1rem;
-  }
-`;
-
-const TitleRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-`;
-
-const Title = styled.h1`
-  margin: 0;
-  font-family: Montserrat;
-  font-size: 2.5rem;
-  font-weight: 700;
-`;
-
-const PillButton = styled.button`
-  padding: 0.6rem 1.5rem;
-  border-radius: 3.125rem;
-  border: none;
-  background: #ffffff;
-  color: #ff7710;
-  font-family: Pretendard;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-
-  &:hover {
-    background: #ff7710;
-    color: #ffffff;
-  }
-  &:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-`;
-
 const Tiles = styled.div`
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
   margin-bottom: 2rem;
 
-  @media (max-width: ${breakpoints.tablet}) {
+  @media (max-width: ${bp.tablet}) {
     grid-template-columns: 1fr;
   }
 `;
 
 const Tile = styled.div`
   padding: 1.25rem 1.5rem;
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.08);
+  border-radius: ${radius.panel};
+  background: ${color.surface};
+  border: 1px solid ${color.line};
 `;
 
 const TileLabel = styled.div`
-  color: #9d9d9d;
+  color: ${color.muted};
   font-size: 0.95rem;
 `;
 
@@ -94,7 +45,7 @@ const TileValue = styled.div`
 `;
 
 const SectionTitle = styled.h2`
-  font-size: 1.5rem;
+  font-size: ${size.lg};
   margin: 0 0 1rem;
 `;
 
@@ -110,11 +61,11 @@ const SessionCard = styled.button`
   flex: 0 0 auto;
   min-width: 11rem;
   padding: 1rem 1.25rem;
-  border-radius: 1rem;
+  border-radius: ${radius.panel};
   border: 2px solid ${(p) => (p.$selected ? "#ff7710" : "transparent")};
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-  font-family: Pretendard;
+  background: ${color.surface};
+  border: 1px solid ${color.line};
+  color: ${color.text};
   text-align: left;
   cursor: pointer;
 `;
@@ -129,15 +80,9 @@ const StatusLine = styled.div`
   align-items: center;
   gap: 0.4rem;
   font-size: 0.9rem;
-  color: #e6e6e6;
+  color: ${color.text};
 `;
 
-const Dot = styled.span`
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 50%;
-  background: ${(p) => p.$color};
-`;
 
 const DetailWrap = styled.div`
   margin-bottom: 2.5rem;
@@ -148,11 +93,13 @@ const TableTools = styled.div`
   gap: 1rem;
   align-items: center;
   margin-bottom: 0.75rem;
-  color: #9d9d9d;
+  color: ${color.muted};
 
   select {
-    font-family: Pretendard;
-    padding: 0.3rem 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: ${radius.control};
+    border: 1px solid ${color.line};
+    background: ${color.raised};
   }
 `;
 
@@ -169,10 +116,10 @@ const Table = styled.table`
   td {
     padding: 0.75rem 1rem;
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid ${color.line};
   }
   th {
-    color: #9d9d9d;
+    color: ${color.muted};
     font-weight: 500;
   }
   td.num {
@@ -212,9 +159,6 @@ const MeterTrack = styled.div`
   }
 `;
 
-const Notice = styled.p`
-  color: #9d9d9d;
-`;
 
 const formatRate = (rate) =>
   rate == null ? "-" : `${(rate * 100).toFixed(1)}%`;
@@ -318,43 +262,42 @@ export default function AdminAttendance() {
 
   if (!isLoggedIn || userType === null || (userType && !isAdmin)) {
     return (
-      <>
-        <Header />
-        <Page>
-          <Notice>
-            {isLoggedIn
-              ? "운영진만 접근할 수 있습니다."
-              : "로그인이 필요합니다."}
-          </Notice>
-        </Page>
-      </>
+      <Page>
+        <PageHead
+          title="출석 통계"
+          description={
+            isLoggedIn
+              ? "운영진 계정으로만 볼 수 있습니다."
+              : "운영진 계정으로 로그인해주세요."
+          }
+        />
+      </Page>
     );
   }
   if (userType === undefined) {
     return (
-      <>
-        <Header />
-        <Page>
-          <Notice>불러오는 중…</Notice>
-        </Page>
-      </>
+      <Page>
+        <PageHead title="출석 통계" description="불러오는 중…" />
+      </Page>
     );
   }
 
   return (
-    <>
-      <Header />
-      <Page>
-        <TitleRow>
-          <Title>출석 통계</Title>
-          <PillButton
+    <Page>
+      <PageHead
+        title="출석 통계"
+        description="세션별 출석 현황과 부원별 누적 출석률입니다. 지각은 출석 0.5회로 계산합니다."
+        actions={
+          <Button
+            $variant="secondary"
             onClick={() => downloadCsv(sortedMembers)}
             disabled={members.length === 0}
           >
-            CSV 내보내기
-          </PillButton>
-        </TitleRow>
-        {error && <Notice>{error}</Notice>}
+            CSV로 받기
+          </Button>
+        }
+      />
+        {error && <Muted>{error}</Muted>}
 
         <Tiles>
           <Tile>
@@ -362,7 +305,7 @@ export default function AdminAttendance() {
             <TileValue>{sessions.length}회</TileValue>
           </Tile>
           <Tile>
-            <TileLabel>부원 평균 출석률 (지각 0.5회)</TileLabel>
+            <TileLabel>부원 평균 출석률</TileLabel>
             <TileValue>{formatRate(averageRate)}</TileValue>
           </Tile>
           <Tile>
@@ -373,7 +316,7 @@ export default function AdminAttendance() {
 
         <SectionTitle>세션별 현황</SectionTitle>
         {sessions.length === 0 ? (
-          <Notice>아직 진행한 세션이 없습니다.</Notice>
+          <Muted>아직 진행한 세션이 없습니다.</Muted>
         ) : (
           <SessionStrip>
             {sessions.map((s) => (
@@ -385,7 +328,7 @@ export default function AdminAttendance() {
                 <SessionDate>{formatDate(s.sessionDate)}</SessionDate>
                 {STATUS_ORDER.map((status) => (
                   <StatusLine key={status}>
-                    <Dot $color={ATTENDANCE_STATUS[status].color} />
+                    <StatusDot $color={ATTENDANCE_STATUS[status].color} />
                     {ATTENDANCE_STATUS[status].label}{" "}
                     {
                       s[
@@ -408,9 +351,11 @@ export default function AdminAttendance() {
               출석부
             </SectionTitle>
             {detail ? (
-              <CheckBoard memberdata={detail} onUpdated={handleDetailUpdated} />
+              <Panel>
+                <CheckBoard memberdata={detail} onUpdated={handleDetailUpdated} />
+              </Panel>
             ) : (
-              <Notice>불러오는 중…</Notice>
+              <Muted>불러오는 중…</Muted>
             )}
           </DetailWrap>
         )}
@@ -426,6 +371,7 @@ export default function AdminAttendance() {
             ))}
           </select>
         </TableTools>
+        <Panel>
         <TableScroll>
           <Table>
             <thead>
@@ -467,7 +413,7 @@ export default function AdminAttendance() {
             </tbody>
           </Table>
         </TableScroll>
-      </Page>
-    </>
+        </Panel>
+    </Page>
   );
 }
