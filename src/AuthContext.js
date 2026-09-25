@@ -4,10 +4,11 @@ import axiosInstance from "./axiosInstance";
 
 // Context 생성
 const AuthContext = createContext();
+// 렌더마다 새로 만들면 effect 의존성이 매번 바뀐다. 모듈에서 한 번만 만든다.
+const cookies = new Cookies();
 
 // AuthProvider 생성
 export function AuthProvider({ children }) {
-  const cookies = new Cookies();
   const [isLoggedIn, setIsLoggedIn] = useState(!!cookies.get("accessToken"));
   const [token, setToken] = useState(cookies.get("accessToken") || ""); // 쿠키에서 accessToken 가져옴
   // undefined: 아직 조회 중, null: 비로그인 또는 조회 실패, "ADMIN" | "BABY_LION"

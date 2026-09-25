@@ -117,7 +117,7 @@ export default function Check() {
     // 새로고침 시 다시 제출되지 않도록 주소에서 토큰을 지운다.
     setSearchParams({}, { replace: true });
     submitToken(tokenParam);
-  }, [tokenParam, isLoggedIn]);
+  }, [tokenParam, isLoggedIn, navigate, setSearchParams]);
 
   useEffect(() => {
     if (!qrDeadline) {
@@ -137,11 +137,6 @@ export default function Check() {
     }
   }, [modalType]);
 
-  useEffect(() => {
-    if (scanResult) {
-      sendQRDataToServer(scanResult);
-    }
-  }, [scanResult]);
 
   const fetchQrCode = async () => {
     try {
@@ -195,9 +190,13 @@ export default function Check() {
     }
   };
 
+  // 스캐너는 300ms마다 onScan을 부른다. 한 번만 제출되도록 ref로 막는다.
+  const scanHandled = useRef(false);
   const handleScan = (data) => {
-    if (data) {
+    if (data && !scanHandled.current) {
+      scanHandled.current = true;
       setScanResult(data.text);
+      sendQRDataToServer(data.text);
     }
   };
 
@@ -215,6 +214,7 @@ export default function Check() {
   };
 
   const openScanModal = () => {
+    scanHandled.current = false;
     setModalType("scan");
     setMessage(null);
     setMessageType(null);
